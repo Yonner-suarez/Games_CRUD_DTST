@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
       <div className={styles.kt_footer}>
         <div className={styles.kt_footer__wrapper}>
           <div className={styles.kt_footer__copyright}>
-            2024&nbsp;©&nbsp;Hardware Store
+            2025&nbsp;©&nbsp;Games CRUD
           </div>
           <div className={styles.kt_footer__menu}>
             <span className={styles.kt_link}>Versión v1.0.0</span>

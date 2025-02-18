@@ -1,46 +1,26 @@
-import { useEffect, useRef } from "react";
-import ModalRegisterLogin from "../../components/ModalLogin/ModalLogin";
-import { Modal } from "bootstrap";
-import TipoProductos from "../../components/TiposProductos/TipoProductos";
-import CarruselHomePage from "../../components/CarruselHomePage/CarruselHomePage";
+
+import { useLocation, useNavigate } from "react-router-dom";
+import Games from "../Games/Games"; 
+import { useEffect } from "react";
 
 const Home: React.FC = () => {
-  const modalRef = useRef<Modal | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const modalElement = document.getElementById("exampleModal");
-    if (modalElement) {
-      modalRef.current = new Modal(modalElement);
-      modalRef.current.show();
-
-      modalElement.addEventListener("hidden.bs.modal", () => {
-        document.body.classList.remove("modal-open");
-        const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-          backdrop.remove();
-        }
-      });
+    const handlePopState = () => {
+      navigate(0);
     }
+    window.addEventListener("popstate", handlePopState)
 
     return () => {
-      if (modalRef.current) {
-        modalRef.current.hide();
-      }
-      document.body.classList.remove("modal-open");
+      window.removeEventListener("popstate", handlePopState)
+    }
+  }, [])
 
-      const backdrop = document.querySelector(".modal-backdrop");
-      if (backdrop) {
-        backdrop.remove();
-      }
-
-      document.body.style.overflow = "";
-    };
-  }, []);
   return (
     <>
-      <ModalRegisterLogin />
-      <CarruselHomePage />
-      <TipoProductos />
+      <Games/>
+      <button onClick={() => navigate("/Games/create")}> Crear Juego</button>
     </>
   );
 };

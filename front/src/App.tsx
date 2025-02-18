@@ -1,21 +1,18 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navbar from "./components/NavBar/Navbar";
 import Footer from "./components/Footer/Footer";
-import Cotizaciones from "./pages/cotizaciones/Cotizaciones";
 import Loader from "./components/Loader/Loader";
-import { getTokenFromLocalStorage } from "./helpers/function";
 import Home from "./pages/Home/Home";
-import ModalRegister from "./components/ModalRegister/ModalRegister";
-import Tools from "./pages/Tools/Tools";
-import Bag from "./pages/Bag/Bag";
-import Profile from "./pages/Profile/Profile";
+import Games from "./pages/Games/Games";
+import CreateGame from "./components/CreateGame/CreateGame";
+import UpdateGame from "./components/UpdateGame/UpdateGame";
 function App() {
+  const location = useLocation();
   const [showLoading, setShowLoading] = useState({ display: "none" });
 
   async function getToken() {
-    const token = await getTokenFromLocalStorage();
     setShowLoading({ display: "none" });
   }
 
@@ -31,22 +28,20 @@ function App() {
         show={showLoading.display === "block" ? true : false}
       ></Loader>
       <Navbar />
-      <Routes>
+      <Routes key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route
-          path="/HardawareStore/cotizaciones/generar"
-          element={<Cotizaciones />}
+          path="/Games/create"
+          element={<CreateGame />}
         />
         <Route
-          path="/HardwareStore/register/user"
-          element={<ModalRegister />}
+          path="/Games/update/:id"
+          element={<UpdateGame />}
         />
         <Route
-          path="/HardwareStore/products"
-          element={<Tools filtro={true} />}
+          path="/Games/products"
+          element={<Games />}
         />
-        <Route path="/HardwareStore/user/profile" element={<Profile />} />
-        <Route path="/HardwareStore/user/bag" element={<Bag />} />
       </Routes>
 
       <Footer />

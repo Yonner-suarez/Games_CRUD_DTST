@@ -39,107 +39,50 @@ export const ValidateFormFunc = (
 ) => {
   const validateForm = { ...validateForms };
 
-  //nombre
-  if (!form.nombre) validateForm.nombre = "Debe ingresar su Nombre";
-  else validateForm.nombre = "";
+  //name
+  if (!form.name) validateForm.name = "Debe ingresar el nombre del juego";
+  else validateForm.name = "";
 
-  //apellido
-  if (!form.apellido) validateForm.apellido = "Debe ingresar su Apellido";
-  else validateForm.apellido = "";
+  //code of game
+  if (!form.code) validateForm.apellido = "Debe ingresar el codigo del juego";
+  else validateForm.code = "";
 
-  //numeroDocumento
-  if (!form.numeroDocumento)
-    validateForm.numeroDocumento = "Debe ingresar su Numero de documento";
-  else validateForm.numeroDocumento = "";
+  //number of players
+  if (!form.numberOfPlayers)
+    validateForm.numberOfPlayers = "Debe ingresar el numero de jugadores";
+  else validateForm.numberOfPlayers ="";
 
-  //numeroTelefono
-  if (!form.numeroTelefono)
-    validateForm.numeroTelefono = "Debe ingresar su Numero de telefono";
-  else validateForm.numeroTelefono = "";
+  //description
+  if (!form.description)
+    validateForm.description = "Debe ingresar la descripción del juego";
+  else validateForm.description = "";
 
-  //tipodocumento
+  //releaseYear
+  if (!form.releaseYear)
+    validateForm.releaseYear = "Debe ingresar el año en que salió el juego";
+  else validateForm.releaseYear = "";
+
+  //defaultConsole
   if (
-    !form.defaultTipoDocumento ||
-    form.defaultTipoDocumento?.value === -1 ||
-    form.defaultTipoDocumento?.value === 0
+    !form.defaultConsole ||
+    form.defaultConsole?.value === -1 ||
+    form.defaultConsole?.value === 0
   )
-    validateForm.defaultTipoDocumento =
-      "Debe ingresar su Tipo de contribuyente";
-  else validateForm.defaultTipoDocumento = "";
+    validateForm.defaultConsole =
+      "Debe ingresar la consola";
+  else validateForm.defaultConsole = "";
 
-  //correoElectronico
-  if (!form.correoElectronico || !emailRegex.test(form.correoElectronico)) {
-    validateForm.correoElectronico =
-      "Debe ingresar su correo electronico válido";
-  } else {
-    validateForm.correoElectronico = "";
-  }
-  //tipoContribuyente
-  if (
-    !form.defaultTipoContribuyente ||
-    form.defaultTipoContribuyente?.value === -1 ||
-    form.defaultTipoContribuyente?.value === 0
-  )
-    validateForm.defaultTipoContribuyente =
-      "Debe ingresar su Tipo de documento";
-  else validateForm.defaultTipoContribuyente = "";
-
-  //numeroDocumento
-  if (!form.numeroDocumento)
-    validateForm.numeroDocumento = "Debe ingresar su Numero de documento";
-  else validateForm.numeroDocumento = "";
-
-  //numeroTelefono
-  if (!form.numeroTelefono)
-    validateForm.numeroTelefono = "Debe ingresar su Numero de telefono";
-  else validateForm.numeroTelefono = "";
-
-  //departamento
-  if (!form.departamento)
-    validateForm.departamento = "Debe ingresar un Departamento";
-  else validateForm.departamento = "";
-
-  //ciudad
-  if (!form.ciudad) validateForm.ciudad = "Debe ingresar su Ciudad";
-  else validateForm.ciudad = "";
-
-  //codigoPostal
-  if (!form.codigoPostal)
-    validateForm.codigoPostal = "Debe ingresar su Codigo Postal";
-  else validateForm.codigoPostal = "";
-
-  //password
-  if (!form.password || !passwordRegex.test(form.password))
-    validateForm.password =
-      "La contraseña debe contener al menos 8 caracteres, una letra, un número y un carácter especial";
-  else validateForm.password = "";
-
-  //confirmPassword
-  if (form.password !== form.confirmPassword)
-    validateForm.confirmPassword = "Las contraseñas no coinciden";
-  else validateForm.confirmPassword = "";
-
-  //terminos y condiciones
-  if (!form.checkedTerminosYCondiciones)
-    validateForm.checkedTerminosYCondiciones =
-      "Debe aceptar los terminos y condiciones";
-  else validateForm.checkedTerminosYCondiciones = "";
+  
 
   setValidateForm(validateForm);
 };
 export const disableButton = (form: any) => {
   return (
-    form.nombre ||
-    form.apellido ||
-    form.defaultTipoDocumento?.value === -1 ||
-    form.numeroDocumento ||
-    form.numeroTelefono ||
-    form.defaultTipoContribuyente?.value === -1 ||
-    form.correoElectronico ||
-    form.departamento ||
-    form.ciudad ||
-    form.codigoPostal ||
-    form.password ||
-    form.confirmPassword
+    form.name ||
+    form.code ||
+    form.defaultConsole?.value === -1 ||
+    form.numberOfPlayers ||
+    form.description ||
+    form.releaseYear 
   );
 };
