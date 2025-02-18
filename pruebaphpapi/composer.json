@@ -1,0 +1,17 @@
+{
+    "name": "api/hardware",
+    "autoload": {
+        "psr-4": {
+            "Api\\Hardware\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yonner Suarez",
+            "email": "135036398+Yonner-suarezLilab@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^6.4"
+    }
+}

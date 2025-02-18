@@ -1,0 +1,110 @@
+.navbar {
+  background-color: #004876;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+}
+.navbar_ul_style {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 32%;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+.a_navbar_logo_style {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 18%;
+  background-color: transparent;
+  text-decoration: none;
+}
+.span_navbar_style {
+  color: #f0ff77;
+  text-decoration: none;
+}
+.span_navbar_style:hover {
+  cursor: pointer;
+}
+.nav_item_style {
+  list-style-type: none;
+  justify-content: space-around;
+  width: 100%;
+  align-items: center;
+  background-color: transparent;
+}
+.nav_item_bag_style {
+  list-style-type: none;
+  display: flex;
+  width: 40%;
+  background-color: transparent;
+}
+.form_navbar_style {
+  display: flex;
+  justify-content: center;
+  width: 40%;
+  background-color: transparent;
+  height: 40px;
+  border: none;
+}
+.input_search_navbar_style {
+  width: 100%;
+  height: 100%;
+  background-color: #ffff;
+  border-radius: 8px;
+  background-image: url("../../../assets/cil--search.svg");
+  background-repeat: no-repeat;
+  background-position: 5px center;
+  background-size: 22px;
+  color: #0000;
+  border: none;
+}
+.input_search_navbar_style:not(:placeholder-shown) {
+  background-image: none;
+  padding-left: 10px;
+  color: #000; /* Cambiado de #0000 a #000 para hacer el texto negro */
+}
+.div_li_ul_navbar_style {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: transparent;
+  width: 100%;
+}
+.p_location_navbar_style {
+  color: #f0ff77;
+  font-size: 14px;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+.div_li_ul_navbar_location_style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+  width: 100%;
+  display: grid;
+  height: 50px;
+}
+.span_nabvar_profile_style {
+  border-radius: 50%;
+  background-color: #f0ff77;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: #004876;
+  font-size: 18px;
+  font-weight: 600;
+}
+.span_nabvar_profile_style:hover {
+  cursor: pointer;
+}

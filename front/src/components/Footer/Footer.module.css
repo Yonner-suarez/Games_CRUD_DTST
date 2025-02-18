@@ -1,0 +1,29 @@
+.kt_footer_kt_grid__item {
+  background-color: #ffffff;
+  width: 100%;
+}
+.kt_footer {
+  width: 100%;
+  height: 40px;
+  background-color: #ffffff;
+}
+.kt_footer__wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  background-color: #feffff;
+}
+.kt_footer__copyright {
+  color: #004876;
+  font-weight: bold;
+}
+.kt_footer__menu {
+  color: #004876;
+  font-weight: bold;
+}
+.kt_link {
+  color: #004876;
+  font-weight: bold;
+}

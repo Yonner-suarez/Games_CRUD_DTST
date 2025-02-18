@@ -1,0 +1,107 @@
+.a_terminos_condiciones {
+  color: #004876;
+  text-decoration: underline;
+}
+.a_terminos_condiciones:hover {
+  cursor: pointer;
+}
+.f_general_style {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 50%;
+  background-color: #d5dcf3;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  border-radius: 10px;
+}
+.d_row_function_general_style {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+}
+
+.d_rows {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 2%;
+  height: 100%;
+}
+.i_general_Style {
+  background-color: #ffff;
+  border: none;
+  height: 32px;
+  width: 70%;
+  border-radius: 3px;
+  color: black;
+  font-size: 16px;
+  font-family: "Albert Sans", sans-serif;
+  letter-spacing: 1px;
+}
+.i_general_Style:focus {
+  border-color: (1, 154, 249);
+  box-shadow: 0 0 5px rgb(1, 154, 249);
+}
+.i_general_Style::-webkit-outer-spin-button,
+.i_general_Style::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.i_general_Style {
+  -moz-appearance: textfield;
+}
+.sp_general_style {
+  width: 100%;
+  color: #750000;
+}
+.select_general_style {
+  background-color: #ffff;
+  border: none;
+  height: 32px;
+  width: 70%;
+  border-radius: 3px;
+  color: black;
+}
+.select_general_style:focus {
+  border-color: #004876;
+  box-shadow: 0 0 5px rgba(0, 73, 118, 0.678);
+}
+.div_input_password_style {
+  background-color: transparent;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.i_eye_pass {
+  margin-left: -30px;
+}
+.div_completar_datos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  color: #ffff;
+  padding: 2%;
+}
+.h6_completar_datos {
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-family: "Albert Sans", sans-serif;
+  padding: 10px;
+}
