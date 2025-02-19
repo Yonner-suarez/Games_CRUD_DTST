@@ -2,6 +2,17 @@ import Swal from "sweetalert2";
 import { BASE_URL, admin } from "./api";
 import axios from "axios";
 
+
+export const getGamebyid = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}${admin.GETGAMEBYID}?id=5`);
+    return response.data.data; 
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+
 export const getConsoles = async () => {
   try {
     const response = await axios.get(`${BASE_URL}${admin.CONSOLES}`);
@@ -44,6 +55,7 @@ export const updateGame = async (body: any, id: number) => {
   try {
      const formData = new FormData();
 
+    formData.append("id", id);
     formData.append("code", body.code);
     formData.append("name", body.name);
     formData.append("description", body.description);
@@ -57,7 +69,7 @@ export const updateGame = async (body: any, id: number) => {
     }
 
 
-    const response = await axios.put(`${BASE_URL}${admin.UPDATEGAME}/${id}`, formData, {
+    const response = await axios.post(`${BASE_URL}${admin.UPDATEGAME}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -141,3 +153,34 @@ export const handleError = (error: any = null) => {
     confirmButtonText: "Cerrar"
   });
 }
+
+ export const base64ToFile = (base64: string, filename:string) => {
+      try {
+        if (!base64 || typeof base64 !== "string") {
+          throw new Error("La cadena base64 es inválida.");
+        }
+
+        const arr = base64.split(",");
+        if (arr.length < 2) {
+          throw new Error("El formato base64 no es válido.");
+        }
+
+        const mimeMatch = arr[0].match(/:(.*?);/);
+        if (!mimeMatch) {
+          throw new Error("No se pudo extraer el tipo MIME.");
+        }
+
+        const mime = mimeMatch[1];
+        const bstr = atob(arr[1]);
+        const u8arr = new Uint8Array(bstr.length);
+
+        for (let i = 0; i < bstr.length; i++) {
+          u8arr[i] = bstr.charCodeAt(i);
+        }
+
+        return new File([u8arr], filename, { type: mime });
+      } catch (error) {
+        return null;
+      }
+    };
+  

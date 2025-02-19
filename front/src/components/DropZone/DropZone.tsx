@@ -62,14 +62,14 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                     <div style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        justifyContent: 'space-between',
+                        justifyContent: 'space-around',
                         alignItems: 'center',
                         padding: '0px 15px',
                         width: '100%',
                     }}>
                         <span>{uploadedFile.name}</span>
-                        <button  onClick={removeFile}>
-                            eliminar Imagen
+                        <button  onClick={removeFile} type="button" className="btn btn-warning">
+                            eliminar
                         </button>
                     </div> :
                     isDragActive ?
