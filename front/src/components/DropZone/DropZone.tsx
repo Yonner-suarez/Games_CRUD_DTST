@@ -91,10 +91,10 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                                     fontStyle: "normal",
                                     fontWeight: "400",
                                     lineHeight: "20px",
-                                }}>Arrastra el documento o </span>
+                                }}>Arrastra la imagen o </span>
                                 <span style={{
                                     color: uploadError ? "#BA1A1A" : '#725C00'
-                                }}>adjúntalo desde tu dispositivo</span>
+                                }}>adjúntala desde tu dispositivo</span>
                             </div>
                         </div>
                 }

@@ -304,7 +304,7 @@ const CreateGame: React.FC = () => {
             )}           
           </div>
 
-           <DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Estatuto actualizado de la sociedad' uploadedFile={uploadedFile['Image']} />
+           <DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Imagen del juego' uploadedFile={uploadedFile['Image']} />
           <button
             onClick={handleSubmit}
             type="submit"
