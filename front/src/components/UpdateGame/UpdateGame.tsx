@@ -109,7 +109,7 @@ const UpdateGame: React.FC = () => {
 
     setShowLoading({ display: "none" });
     if (response.status == 200) {
-      Swal.fire("Registro exitoso", "Tu Juego ha sido creado", "success");   
+      Swal.fire("Registro exitoso", "Tu Juego ha sido actualizado", "success");   
       navigate("/")
     }
     else {
