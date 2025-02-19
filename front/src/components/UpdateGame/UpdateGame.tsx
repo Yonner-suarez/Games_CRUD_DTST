@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Button } from "react-bootstrap";
-import { ValidateFormFunc, disableButton } from "../../helpers/function";
+import { ValidateFormFunc, disableButton, getGamebyid, getConsoles, base64ToFile, updateGame, handleError } from "../../helpers/function";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import styles from "./UpdateGame.module.css";
@@ -16,6 +16,7 @@ const UpdateGame: React.FC = () => {
   const [uploadedFile, setUploadedFile] = useState({});
   const [isFileLoaded, setIsFileLoaded] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [previewURL , setPreviewURL] = useState("")
   const [showLoading, setShowLoading] = useState({ display: "none" });
   const [form, setForm] = useState({
     code: 0,
@@ -28,28 +29,42 @@ const UpdateGame: React.FC = () => {
     Image: {}
   });
   const [validateForm, setValidateForm] = useState({
-    code: 0,
+    code: "",
     name: "",
     defaultConsole: { value: -1, label: "--Tipo de Consola--" },
     consoles: [],
     description: "",
-    releaseYear: 0,
-    numberOfPlayers: 0,
+    releaseYear: "",
+    numberOfPlayers: "",
     Image: {}
   });
-  
-  const llamarAlGameID = (id: int) => {
+
+   
+  const llamarAlGameID = async (id: int) => {
+    const game = await getGamebyid();
+    const consoles = await getConsoles()
+
+    let base64String = game.data.image;
+    if (!base64String.startsWith("data:image")) {
+      base64String = `data:image/png;base64,${base64String}`;
+    }
+    const file = base64ToFile(base64String, "imagen.png");
+    if (file) {
+      setPreviewURL(URL.createObjectURL(file))
+      setUploadedFile((prevState) => ({ ...prevState, 'Image': file }));
+    }
+
     setForm({
-      code: JuegoDummy.code || 0,
-      name: JuegoDummy.name || "",
-      defaultConsole: JuegoDummy.defaultConsole || { value: -1, label: "--Tipo de Consola--" },       
-      description: JuegoDummy.description || "",
-      releaseYear: JuegoDummy.yearRelease || 0,
-      numberOfPlayers: JuegoDummy.numberOfPlayers || 0,
-      Image: JuegoDummy.image || {},
+      code: game.data.code || 0,
+      name:  game.data.name || "",
+      defaultConsole:  game.data.console || { value: -1, label: "--Tipo de Consola--" },       
+      description:  game.data.description || "",
+      releaseYear:  game.data.releaseYear || 0,
+      numberOfPlayers:  game.data.numberOfPlayers || 0,
+      Image:  game.data.image || {},
       consoles: setOptionsSelect(
         "defaultConsole",
-        consoles
+        consoles.data
       ),
     });
   }
@@ -84,23 +99,23 @@ const UpdateGame: React.FC = () => {
       );
     }
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setShowLoading({ display: "block" });
     e.preventDefault();
 
-    form.Image = uploadedFile
-    //Llama a la DB
-    setTimeout(() => {
-      Swal.fire("Actualización exitosa", "Tu Juego se ha actualizado", "success");
-      setShowLoading({ display: "none" });
+    form.Image = uploadedFile 
+   
+    const response = await updateGame(form, idGame);
+
+    setShowLoading({ display: "none" });
+    if (response.status == 200) {
+      Swal.fire("Registro exitoso", "Tu Juego ha sido actualizado", "success");   
       navigate("/")
-    }, 2000);
-
+    }
+    else {
+      handleError();
+    }
   };
-
-  
-
-
   const abrir_input_span_verificator = (
     Placeholder: string,
     propValidar: string,
@@ -197,34 +212,42 @@ const UpdateGame: React.FC = () => {
         });
         setIsFileLoaded(false)
   };
-  const onDrop = (acceptedFiles, label) => {
-  const readFile = (file: File) => {
+const onDrop = (acceptedFiles, label) => {
+  const readFile = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
-      reader.onabort = () => reject("file reading was aborted");
-      reader.onerror = () => reject("file reading has failed");
+      reader.onabort = () => reject("File reading was aborted");
+      reader.onerror = () => reject("File reading has failed");
 
-      reader.onload = () => {
-        resolve(reader.result);
-      };
+      reader.onload = () => resolve(reader.result);
 
       reader.readAsArrayBuffer(file);
     });
   };
-  acceptedFiles.forEach((file) => {
+
+  const processFile = (file) => {
     readFile(file)
-      .then((fileContent) => {
+      .then(() => {
         setUploadedFile((prevState) => ({ ...prevState, [label]: file }));
         setIsFileLoaded(true);
-       
       })
-      .catch((error) => {
-       window.alert("Error al leer la imagen")
+      .catch(() => {
+        window.alert("Error al leer la imagen");
       });
-  });
-};
+  };
 
+  if (Array.isArray(acceptedFiles)) {
+    // Caso normal: es un array de archivos
+    acceptedFiles.forEach(processFile);
+  } else if (typeof acceptedFiles === "string" && acceptedFiles.startsWith("data:image")) {
+    // Caso especial: es un string en Base64
+    const file = base64ToFile(acceptedFiles, "imagen.png");
+    processFile(file);
+  } else {
+    console.error("Formato de archivo no válido en onDrop", acceptedFiles);
+  }
+  };
 
   return (
     <>
@@ -236,7 +259,6 @@ const UpdateGame: React.FC = () => {
             <br />
             <br />            
           </h6>
-          {console.log(form)}
           <div className={styles.d_row_function_general_style}>
             {abrir_input_span_verificator(
               "Ej. 23464897",
@@ -291,8 +313,11 @@ const UpdateGame: React.FC = () => {
               validateForm.description
             )}           
           </div>
+            {previewURL && <><img src={previewURL} alt="Vista previa" /><button onClick={()=> {setPreviewURL("")}} type="button" class="btn btn-danger">Eliminar</button></>}
 
-           <DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Estatuto actualizado de la sociedad' uploadedFile={uploadedFile['Image']} />
+          {
+            previewURL ?<></>:<DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Imagen del juego' uploadedFile={uploadedFile['Image']} />
+          } 
           <button
             onClick={handleSubmit}
             type="submit"
@@ -304,9 +329,8 @@ const UpdateGame: React.FC = () => {
               cursor: "pointer",
               marginTop: "20px",
             }}
-            disabled={disableButton(validateForm)}
           >
-            {disableButton(validateForm, isFileLoaded) ? "Registrando Juego..." : "Registra ahora"}
+            { "Registra ahora"}
           </button>
         </form>
       </div>
@@ -316,30 +340,8 @@ const UpdateGame: React.FC = () => {
 
 export default UpdateGame;
 
-const JuegoDummy = {
-  code: 52373783275,
-  description: "Call of Duty is a first-person shooter video game series developed by Infinity Ward and published by Activision.",
-  image: "Buffer.from('aGVsbG8gd29ybGQ=', 'base64')",
-  numberOfPlayers: 4,
-  yearRelease: 2003,
-  defaultConsole:{value:2, label: "PlayStation"},
-  name: "Call of Duty"
-};
 
 
 
-const consoles = [
-  {
-    id: 1,
-    name: "X-Box",
-  },
-  {
-    id: 2,
-    name: "Play Station",
-  },
-  {
-    id: 3,
-    name: "Atari",
-  },
-];
+
 

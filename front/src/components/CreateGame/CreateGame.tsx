@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Button } from "react-bootstrap";
-import { ValidateFormFunc, disableButton } from "../../helpers/function";
+import { ValidateFormFunc, createGame, disableButton, getConsoles, handleError } from "../../helpers/function";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import styles from "./CreateGame.module.css";
@@ -27,25 +27,32 @@ const CreateGame: React.FC = () => {
     Image: {}
   });
   const [validateForm, setValidateForm] = useState({
-    code: 0,
+    code: "",
     name: "",
     defaultConsole: { value: -1, label: "--Tipo de Consola--" },
     consoles: [],
     description: "",
-    releaseYear: 0,
-    numberOfPlayers: 0,
+    releaseYear: "",
+    numberOfPlayers: "",
     Image: {}
   });
   
+   const fetchConsoles = async () => {
+     try {
+        setShowLoading({ display: "block" });
+        const consoles = await getConsoles();
+        setForm((prevForm) => ({
+          ...prevForm,
+          consoles: setOptionsSelect("defaultConsole", consoles.data),
+        }));
+       setShowLoading({ display: "none" });
+      } catch (error) {
+        console.error("Error al obtener consolas:", error);
+      }
+    };
 
   useEffect(() => {
-    setForm({
-      ...form,
-      consoles: setOptionsSelect(
-        "defaultConsole",
-        consoles
-      ),
-    });
+      fetchConsoles();
   }, []);
 
   const handleChange = (
@@ -75,21 +82,26 @@ const CreateGame: React.FC = () => {
       );
     }
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setShowLoading({ display: "block" });
     e.preventDefault();
     if (!isFileLoaded || !uploadedFile.Image || Object.keys(uploadedFile.Image).length === 0) {
         return errorImage();
       }
 
-    form.Image = uploadedFile
-    //Llama a la DB
-    setTimeout(() => {
-      Swal.fire("Registro exitoso", "Tu Juego ha sido creado", "success");
-      setShowLoading({ display: "none" });
-      navigate("/")
-    }, 2000);
+    form.Image = uploadedFile    
 
+    const status = await createGame(form);
+
+    if (status == 200) {
+      setShowLoading({ display: "none" });
+      Swal.fire("Registro exitoso", "Tu Juego ha sido creado", "success");    
+      navigate("/")
+    }
+    else {
+      setShowLoading({ display: "none" });
+      handleError();
+    }
   };
 
    const errorImage = (message: string) => {
@@ -292,7 +304,7 @@ const CreateGame: React.FC = () => {
             )}           
           </div>
 
-           <DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Estatuto actualizado de la sociedad' uploadedFile={uploadedFile['Image']} />
+           <DropZone removeFile={() => { removeFile("Image") }} onFilesUpload={(acceptedFiles) => onDrop(acceptedFiles, 'Image')} required={true} label='Imagen del juego' uploadedFile={uploadedFile['Image']} />
           <button
             onClick={handleSubmit}
             type="submit"
@@ -316,18 +328,4 @@ const CreateGame: React.FC = () => {
 
 export default CreateGame;
 
-const consoles = [
-  {
-    id: 1,
-    name: "X-Box",
-  },
-  {
-    id: 2,
-    name: "Play Station",
-  },
-  {
-    id: 3,
-    name: "Atari",
-  },
-];
 

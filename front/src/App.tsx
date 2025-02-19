@@ -39,7 +39,7 @@ function App() {
           element={<UpdateGame />}
         />
         <Route
-          path="/Games/products"
+          path="/Games"
           element={<Games />}
         />
       </Routes>

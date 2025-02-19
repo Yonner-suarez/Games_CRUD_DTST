@@ -62,14 +62,14 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                     <div style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        justifyContent: 'space-between',
+                        justifyContent: 'space-around',
                         alignItems: 'center',
                         padding: '0px 15px',
                         width: '100%',
                     }}>
                         <span>{uploadedFile.name}</span>
-                        <button  onClick={removeFile}>
-                            eliminar Imagen
+                        <button  onClick={removeFile} type="button" className="btn btn-warning">
+                            eliminar
                         </button>
                     </div> :
                     isDragActive ?
@@ -91,10 +91,10 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                                     fontStyle: "normal",
                                     fontWeight: "400",
                                     lineHeight: "20px",
-                                }}>Arrastra el documento o </span>
+                                }}>Arrastra la imagen o </span>
                                 <span style={{
                                     color: uploadError ? "#BA1A1A" : '#725C00'
-                                }}>adjúntalo desde tu dispositivo</span>
+                                }}>adjúntala desde tu dispositivo</span>
                             </div>
                         </div>
                 }
