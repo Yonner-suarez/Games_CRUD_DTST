@@ -28,17 +28,18 @@ const UpdateGame: React.FC = () => {
     Image: {}
   });
   const [validateForm, setValidateForm] = useState({
-    code: 0,
+    code: "",
     name: "",
     defaultConsole: { value: -1, label: "--Tipo de Consola--" },
     consoles: [],
     description: "",
-    releaseYear: 0,
-    numberOfPlayers: 0,
+    releaseYear: "",
+    numberOfPlayers: "",
     Image: {}
   });
   
-  const llamarAlGameID = (id: int) => {
+  const llamarAlGameID = async (id: int) => {
+    const consoles = await getConsoles()
     setForm({
       code: JuegoDummy.code || 0,
       name: JuegoDummy.name || "",
@@ -328,18 +329,4 @@ const JuegoDummy = {
 
 
 
-const consoles = [
-  {
-    id: 1,
-    name: "X-Box",
-  },
-  {
-    id: 2,
-    name: "Play Station",
-  },
-  {
-    id: 3,
-    name: "Atari",
-  },
-];
 

@@ -1,30 +1,75 @@
-import { BASE_URL, GEO_URL, geo } from "./api";
+import Swal from "sweetalert2";
+import { BASE_URL, admin } from "./api";
 import axios from "axios";
 
-const passwordRegex =
-  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const emailRegex = /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
-export const obtenerNombreCiudad = async (
-  latitude: number,
-  longitude: number
-): Promise<string> => {
+export const getConsoles = async () => {
   try {
-    const url = `${GEO_URL}${geo.GEO_URL}?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`;
-    const response = await axios.get(url);
-    const data = response.data;
-    if (data && data.address) {
-      const ciudad =
-        data.address.city ||
-        data.address.town ||
-        data.address.village ||
-        "Desconocida";
-      return ciudad;
-    }
-    throw "Ciudad no encontrada";
+    const response = await axios.get(`${BASE_URL}${admin.CONSOLES}`);
+    return response.data; 
   } catch (error) {
-    throw "Algo salió mal";
+    handleError(error);
   }
 };
+
+
+export const createGame = async (body: any) => {
+  try {
+    const formData = new FormData();
+
+    formData.append("code", body.code);
+    formData.append("name", body.name);
+    formData.append("description", body.description);
+    formData.append("releaseYear", body.releaseYear);
+    formData.append("numberOfPlayers", body.numberOfPlayers);
+    if (body.defaultConsole && body.defaultConsole.value) {
+      formData.append("console", body.defaultConsole.value);
+    }
+    if (body.Image?.Image) {
+      formData.append("image", body.Image.Image);
+    }
+
+    const response = await axios.post(`${BASE_URL}${admin.CREATEGAME}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.status;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateGame = async (body: any, id: number) => {
+  try {
+     const formData = new FormData();
+
+    formData.append("code", body.code);
+    formData.append("name", body.name);
+    formData.append("description", body.description);
+    formData.append("releaseYear", body.releaseYear);
+    formData.append("numberOfPlayers", body.numberOfPlayers);
+    if (body.defaultConsole && body.defaultConsole.value) {
+      formData.append("console", body.defaultConsole.value);
+    }
+    if (body.Image?.Image) {
+      formData.append("image", body.Image.Image);
+    }
+
+
+    const response = await axios.put(`${BASE_URL}${admin.UPDATEGAME}/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+
 export async function getTokenFromLocalStorage(): Promise<string | null> {
   //localStorage.setItem("user", JSON.stringify({ token: "aqui el token" }));
   const userString = localStorage.getItem("user");
@@ -86,3 +131,13 @@ export const disableButton = (form: any) => {
     form.releaseYear 
   );
 };
+
+export const handleError = (error: any = null) => {
+  Swal.fire({
+    icon: "error",
+    title: "¡Error!",
+    text: error?.error || "Ocurrió un error inesperado.",
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Cerrar"
+  });
+}
