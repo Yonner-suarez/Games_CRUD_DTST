@@ -12,12 +12,13 @@ require_once(__DIR__ . "/infraestructure/middleware.php");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 
-try{
+try{  
   $router = new Router();
   $response = $router->matchRoute($uri);
   Middleware::jsonMiddleware($response);
 }catch(Exception $e){
-  Middleware::jsonMiddleware(["error" => $e->getMessage(), "code" => $e->getCode(), "dara" => null]);
+  
+  Middleware::jsonMiddleware(["error" => $e->getMessage(), "code" => $e->getCode(), "data" => null]);
 }
 
 
@@ -29,6 +30,7 @@ try{
 
 //<Directory /ruta/a/tu/sitio/web>
 //    AllowOverride All
+//    Require all granted
 //</Directory>
 
 /*

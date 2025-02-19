@@ -11,16 +11,29 @@
 
 
 --
--- Base de datos: `hardware_nuts_db`
+-- Base de datos: `games_crud`
+CREATE DATABASE games_crud
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `products`
+-- Estructura de tabla para la tabla `quotations`
 --
 
-CREATE TABLE `games` (
+CREATE TABLE `crud_consoles` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,  -- Nombre de la consola (e.g. PlayStation 5, Xbox Series X)
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `games`
+--
+
+CREATE TABLE `crud_games` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(50) NOT NULL,
   `name` VARCHAR(100) NOT NULL,
@@ -37,21 +50,9 @@ CREATE TABLE `games` (
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `quotations`
---
-
-CREATE TABLE `consoles` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100) NOT NULL,  -- Nombre de la consola (e.g. PlayStation 5, Xbox Series X)
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
-
 
 -- Insersion de consoles por default
-INSERT INTO `consoles` (`name`)
+INSERT INTO `crud_consoles` (`name`)
 VALUES
 ('Nintendo Switch'),
 ('Xbox Series S'),
