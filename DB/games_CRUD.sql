@@ -43,7 +43,7 @@ CREATE TABLE `crud_games` (
   `numberOfPlayers` INT(11) NOT NULL,
   `image` LONGBLOB,  -- Para almacenar imágenes en formato binario
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`console_id`) REFERENCES `consoles`(`id`) ON DELETE CASCADE  -- Relación con consolas
+  FOREIGN KEY (`console_id`) REFERENCES `crud_consoles`(`id`) ON DELETE CASCADE  -- Relación con consolas
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 

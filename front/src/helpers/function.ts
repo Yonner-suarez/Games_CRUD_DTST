@@ -82,13 +82,6 @@ export const updateGame = async (body: any, id: number) => {
 };
 
 
-export async function getTokenFromLocalStorage(): Promise<string | null> {
-  //localStorage.setItem("user", JSON.stringify({ token: "aqui el token" }));
-  const userString = localStorage.getItem("user");
-  if (!userString) return null;
-  const user = JSON.parse(userString);
-  return user?.token || null;
-}
 export const ValidateFormFunc = (
   form: any,
   validateForms: any,
@@ -107,6 +100,8 @@ export const ValidateFormFunc = (
   //number of players
   if (!form.numberOfPlayers)
     validateForm.numberOfPlayers = "Debe ingresar el numero de jugadores";
+  else if (form.numberOfPlayers <= 0 || form.numberOfPlayers >= 21)
+    validateForm.numberOfPlayers = "Debe ingresar el numero de jugadores válido";
   else validateForm.numberOfPlayers ="";
 
   //description
@@ -117,6 +112,8 @@ export const ValidateFormFunc = (
   //releaseYear
   if (!form.releaseYear)
     validateForm.releaseYear = "Debe ingresar el año en que salió el juego";
+  else if (form.releaseYear <= 1900 || form.releaseYear >= 2026)
+     validateForm.releaseYear = "Debe ingresar un año válido";
   else validateForm.releaseYear = "";
 
   //defaultConsole
