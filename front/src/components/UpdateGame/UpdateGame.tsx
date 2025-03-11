@@ -130,7 +130,32 @@ const UpdateGame: React.FC = () => {
   ) => {
     if (!select)
       return (
-        <div className={styles.d_rows}>          
+        <>
+          {name == "code" ?  <div className={styles.d_rows}>          
+            <>
+              <span style={{ color: "black", fontWeight: "bold" }}>{name}</span>
+              <input
+                className={styles.i_general_Style}
+                type={type}
+                name={name}
+                value={propValidar}
+                onChange={handleChange}
+                placeholder={texto}
+                readOnly
+              />
+            </>
+          
+
+          <span className={styles.sp_general_style}>
+            {texto !== "" && validateForm[name] !== "" ? (
+              <>
+                {texto}                
+              </>
+            ) : (
+              ""
+            )}
+          </span>
+        </div> :  <div className={styles.d_rows}>          
             <>
               <span style={{ color: "black", fontWeight: "bold" }}>{name}</span>
               <input
@@ -153,7 +178,8 @@ const UpdateGame: React.FC = () => {
               ""
             )}
           </span>
-        </div>
+        </div>}
+        </>
       );
     else
       return (
