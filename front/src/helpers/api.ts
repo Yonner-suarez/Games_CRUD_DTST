@@ -7,3 +7,4 @@ export const admin: IAdminRoutes = {
   CONSOLES: "/Games CRUD/pruebaphpapi/game/consoles",
   GETGAMEBYID: "/Games CRUD/pruebaphpapi/game/gamesById"
 };
+//hola mundo
