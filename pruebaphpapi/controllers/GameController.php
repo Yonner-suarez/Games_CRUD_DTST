@@ -210,7 +210,7 @@ class GameController{
                            g.releaseYear, g.image, c.id as console_id, c.name as console_name
                     FROM crud_games g
                     INNER JOIN crud_consoles c ON g.console_id = c.id
-                    WHERE g.id = ?";
+                    WHERE g.id = ?"; 
             
             $stmt = $conn->prepare($sql);
 
@@ -257,6 +257,49 @@ class GameController{
         throw $e;
     }
 }
-
-
+public function deletegame() {
+    try {
+        $method_request = $_SERVER['REQUEST_METHOD'];
+        if ($method_request == "DELETE") {
+            // Obtener el ID desde la URL
+            if (!isset($_GET['id']) || empty($_GET['id'])) {
+                Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
+                return;
+            }
+            $id = $_GET['id'];
+            global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+            $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
+ 
+            if ($conn->connect_error) {
+                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                return;
+            }
+ 
+            $sql = "DELETE FROM crud_games WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+                return;
+            }
+ 
+            $stmt->bind_param("i", $id);
+            if (!$stmt->execute()) {
+                Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
+                return;
+            }
+            if ($stmt->affected_rows > 0) {
+                Middleware::jsonMiddleware(['message' => 'Juego eliminado exitosamente'], 200);
+            } else {
+                Middleware::jsonMiddleware(['message' => 'No se encontró un Juego con ese ID'], 404);
+            }
+ 
+            $stmt->close();
+            $conn->close();
+        } else {
+            throw new BadRequestResponse("Método no permitido");
+        }
+    } catch (Exception $e) {
+        throw $e;
+    }
+}
 }
