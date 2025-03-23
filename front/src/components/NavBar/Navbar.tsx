@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { getGamebyid } from "../../helpers/function";
+import { getGamebyid, handleError } from "../../helpers/function";
 import logo from "../../../assets/logo.jpeg"
 import Loader from "../Loader/Loader";
 
@@ -15,11 +15,17 @@ const Navbar: React.FC = () => {
   const shouldShowSearch = !location.pathname.includes("/Games/update") && !location.pathname.includes("/Games/create");
 
   const handleSearch = async () => {
-    setShowLoading({display: "block"})
-    const response = await getGamebyid(searchTerm);
-    response.data && setGameFunded(response.data);
-    setShowLoading({display: "none"})
-    navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded } });
+    try {
+      setShowLoading({display: "block"})
+      const response = await getGamebyid(searchTerm);
+      response?.data && setGameFunded(response?.data);
+      setShowLoading({display: "none"})
+      navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded } });
+  
+    } catch (error) { 
+      handleError(error)
+    }
+      
 
   };
 
@@ -39,7 +45,7 @@ const Navbar: React.FC = () => {
       <form className={styles.form_navbar_style} role="search">
         {shouldShowSearch && (
           <>
-            <Loader estilo={showLoading} />
+            <Loader show={true} estilo={showLoading} />
             <input
             className={styles.input_search_navbar_style}
             type="search"

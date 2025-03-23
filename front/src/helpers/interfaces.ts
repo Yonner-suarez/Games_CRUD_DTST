@@ -3,4 +3,6 @@ export interface IAdminRoutes {
   UPDATEGAME: string;
   CONSOLES: string;
   GETGAMEBYID: string;
+  LISTGAMES: string;
+  DELETEGAMES: string;
 }

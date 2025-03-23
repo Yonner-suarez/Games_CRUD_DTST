@@ -325,7 +325,7 @@ class GameController{
                 return;
             }
             $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers,
-                           g.releaseYear, g.image, c.id as console_id, c.name as console_name FROM crud_games as g INNER JOIN crud_consoles AS c ON c.id = g.id";
+                           g.releaseYear, g.image, c.id as console_id, c.name as console_name FROM crud_games as g INNER JOIN crud_consoles AS c ON c.id = g.console_id";
             $stmt = $conn->prepare($sql);
             if (!$stmt){
                 Middleware::jsonMiddleware(['error'=>'Error en la consulta' . $conn->error], 500);
@@ -352,7 +352,7 @@ class GameController{
             if (count($games) > 0){
                 return new GeneralResponse("Proceso exitoso", 200, $games);
             } else {
-                throw new BadRequestResponse("No hay jjuegos guardados");
+                throw new BadRequestResponse("No hay juegos guardados");
             }
             $stmt->close();
             $conn->close();

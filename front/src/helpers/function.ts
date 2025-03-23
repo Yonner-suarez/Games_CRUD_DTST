@@ -54,7 +54,7 @@ export const updateGame = async (body: any, id: number) => {
   try {
      const formData = new FormData();
 
-    formData.append("id", id);
+    formData.append("id", String(id));
     formData.append("code", body.code);
     formData.append("name", body.name);
     formData.append("description", body.description);
@@ -75,6 +75,25 @@ export const updateGame = async (body: any, id: number) => {
     });
 
     return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const listGames = async () => {
+  try {
+    const response = await axios.get (`${BASE_URL}${admin.LISTGAMES}`)
+    const games = response.data.data;
+    return games;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const deleteGames = async (gameId: number) => {
+  try {
+    let response = await axios.delete (`${BASE_URL}${admin.DELETEGAMES}/${gameId}`);
+    return response
   } catch (error) {
     handleError(error);
   }
@@ -149,6 +168,7 @@ export const handleError = (error: any = null) => {
     confirmButtonText: "Cerrar"
   });
 }
+
 
  export const base64ToFile = (base64: string, filename:string) => {
       try {
