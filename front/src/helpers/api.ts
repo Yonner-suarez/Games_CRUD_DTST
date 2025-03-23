@@ -6,5 +6,4 @@ export const admin: IAdminRoutes = {
   UPDATEGAME: "/GAMES_CRUD_DTST/pruebaphpapi/game/update",
   CONSOLES: "/GAMES_CRUD_DTST/pruebaphpapi/game/consoles",
   GETGAMEBYID: "/GAMES_CRUD_DTST/pruebaphpapi/game/gamesById",
-  GAMESLIST: "/GAMES_CRUD_DTST/pruebaphpapi/game/list",
 };

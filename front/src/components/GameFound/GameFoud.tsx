@@ -1,4 +1,3 @@
-import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation } from "react-router-dom";
 
@@ -16,7 +15,9 @@ interface GameProps {
 
 const GameFound: React.FC<GameProps> = ({ dataGameFound }) => {
   const location = useLocation();
-  const {game} = location.state
+  let { game } = location.state;
+  
+
   if (!game) {
     return <p className="text-center text-muted">No se encontró el juego.</p>;
   }

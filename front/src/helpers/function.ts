@@ -21,15 +21,6 @@ export const getConsoles = async () => {
     handleError(error);
   }
 };
-export const gameList = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}${admin.GAMESLIST}`);
-    return response.data.data; 
-  } catch (error) {
-    handleError(error);
-  }
-};
-
 
 export const createGame = async (body: any) => {
   try {

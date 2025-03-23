@@ -19,8 +19,8 @@ const Home: React.FC = () => {
 
   return (
     <>
+      
       <Games/>
-      <button onClick={() => navigate("/Games/create")}> Crear Juego</button>
     </>
   );
 };
