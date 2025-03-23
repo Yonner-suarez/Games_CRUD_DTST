@@ -1,22 +1,26 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-interface GameProps {
-  dataGameFound: {
-    code: string;
-    name: string;
-    console: { value: number; label: string };
-    description: string;
-    image: string;
-    numberOfPlayers: number;
-    releaseYear: number;
-  };
+interface GameData {
+  code: string;
+  name: string;
+  console: { value: number; label: string };
+  description: string;
+  image: string;
+  numberOfPlayers: number;
+  releaseYear: number;
 }
 
-const GameFound: React.FC<GameProps> = ({ dataGameFound }) => {
+const GameFound: React.FC = () => {
   const location = useLocation();
-  let { game } = location.state;
-  
+  const [game, setGame] = useState<GameData | null>(null);
+
+  useEffect(() => {
+    if (location.state?.game) {
+      setGame(location.state.game);
+    }
+  }, [location.state]);
 
   if (!game) {
     return <p className="text-center text-muted">No se encontró el juego.</p>;
@@ -24,6 +28,7 @@ const GameFound: React.FC<GameProps> = ({ dataGameFound }) => {
 
   return (
     <div className="container mt-4">
+      {console.log("Renderizando con juego:", game)}
       <div className="card shadow-sm">
         <div className="row g-0">
           {/* Imagen del juego */}

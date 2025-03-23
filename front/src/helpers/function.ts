@@ -21,6 +21,15 @@ export const getConsoles = async () => {
     handleError(error);
   }
 };
+export const gameList = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}${admin.GAMESLIST}`);
+    return response.data.data; 
+  } catch (error) {
+    handleError(error);
+  }
+};
+
 
 export const createGame = async (body: any) => {
   try {
@@ -54,7 +63,7 @@ export const updateGame = async (body: any, id: number) => {
   try {
      const formData = new FormData();
 
-    formData.append("id", id);
+    //formData.append("id", id);
     formData.append("code", body.code);
     formData.append("name", body.name);
     formData.append("description", body.description);
