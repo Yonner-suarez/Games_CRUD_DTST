@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 // import trashIcon from '../../assets/delete_icon.svg';
 
 const acceptedFileExtensions = [
-    '.jpg', '.png', '.svg'
+    '.png'
 ];
 
 const maxFileSize = 200 * 1024 * 1024;

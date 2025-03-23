@@ -74,9 +74,9 @@ class GameController{
                 throw new BadRequestResponse("Método no permitido");
             }
 
-            $idGame = $_POST['id'] ?? 0;
+            $idGame = $_POST['code'] ?? 0;
             if ($idGame == 0) {
-                throw new BadRequestResponse("Debe ingresar el id del juego");
+                throw new BadRequestResponse("Debe ingresar el código del juego");
             }
 
             $code = $_POST['code'] ?? '';
@@ -103,7 +103,7 @@ class GameController{
             // Crear la consulta SQL con placeholders
             $sql = "UPDATE crud_games 
                     SET code = ?, name = ?, console_id = ?, description = ?, releaseYear = ?, numberOfPlayers = ?, image = ?
-                    WHERE id = ?";
+                    WHERE code = ?";
 
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
@@ -114,7 +114,7 @@ class GameController{
             $types = "ssissibi"; // s = string, i = integer, b = blob
 
             // Enlazar parámetros
-            $stmt->bind_param($types, $code, $gameName, $console, $description, $releaseYear, $numberOfPlayers, $null, $idGame);
+            $stmt->bind_param($types, $code, $gameName, $console, $description, $releaseYear, $numberOfPlayers, $null, $code);
 
             // Si hay imagen, enviar los datos binarios
             if ($imageData) {
@@ -257,4 +257,54 @@ class GameController{
         throw $e;
     }
 }
+
+
+ public function listGames() {
+        $method_request = $_SERVER['REQUEST_METHOD'];
+        if ($method_request == "GET"){
+            global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+            $conn = new mysqli ($host, $dbUser, $dbPassword, $dbName, $dbPort);
+            
+            if ($conn->connect_error){
+                Middleware::jsonMiddleware(['error'=>'Error en la base de datos' . $conn->connect_error], 500);
+                return;
+            }
+            $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers, 
+                           g.releaseYear, g.image, c.id as console_id, c.name as console_name FROM crud_games as g INNER JOIN crud_consoles AS c ON c.id = g.console_id";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt){
+                Middleware::jsonMiddleware(['error'=>'Error en la consulta' . $conn->error], 500);
+                return;
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $games = [];
+            while ($gameData = $result->fetch_assoc()){
+                $console = new Console($gameData['console_id'], $gameData['console_name']);
+                $game = new Game(
+                    $gameData['name'],
+                    $gameData['description'],
+                    $gameData['code'],
+                    $gameData['numberOfPlayers'],
+                    $gameData['releaseYear'],
+                    $gameData['image'],
+                    $console
+                );
+                $game->image = trim(base64_encode($game->image));
+
+                array_push($games, $game);
+            }
+            if (count($games) > 0){
+                return new GeneralResponse("Proceso exitoso", 200, $games);
+            } else {
+                throw new BadRequestResponse("No hay juegos guardados");
+            }
+            $stmt->close();
+            $conn->close();
+        } else {
+            Middleware :: jsonMiddleware(['error'=>'Método no permitido'], 405);
+            return;
+        }
+    }
+
 }

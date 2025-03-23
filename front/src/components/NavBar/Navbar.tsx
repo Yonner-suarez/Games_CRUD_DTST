@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { getGamebyid } from "../../helpers/function";
+import { getGamebyid, handleError } from "../../helpers/function";
 import logo from "../../../assets/logo.jpeg"
 import Loader from "../Loader/Loader";
 
@@ -15,13 +15,23 @@ const Navbar: React.FC = () => {
   const shouldShowSearch = !location.pathname.includes("/Games/update") && !location.pathname.includes("/Games/create");
 
   const handleSearch = async () => {
-    setShowLoading({display: "block"})
-    const response = await getGamebyid(searchTerm);
-    response.data && setGameFunded(response.data);
-    setShowLoading({display: "none"})
-    navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded } });
+  try {
+    setShowLoading({ display: "block" });
 
-  };
+    const response = await getGamebyid(searchTerm);
+    setShowLoading({ display: "none" });
+
+    if (response.data) {
+      navigate(`/Games/details/${searchTerm}`, { state: { game: response.data } });
+    } else {
+      console.error("No se encontró el juego.");
+    }
+  } catch (err) {
+    setShowLoading({ display: "none" });
+    handleError(err);
+  }
+};
+
 
   const handleHome = () => {
     navigate(`/`);
@@ -50,7 +60,7 @@ const Navbar: React.FC = () => {
             onKeyDown={handleKeyDown}
             onBlur={handleSearch}
             />
-            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"20px"}} />
+            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"60px"}} />
           </>
           
         )}

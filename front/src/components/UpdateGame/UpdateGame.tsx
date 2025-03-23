@@ -41,7 +41,7 @@ const UpdateGame: React.FC = () => {
 
    
   const llamarAlGameID = async (id: int) => {
-    const game = await getGamebyid();
+    const game = await getGamebyid(id);
     const consoles = await getConsoles()
 
     let base64String = game.data.image;
@@ -69,7 +69,7 @@ const UpdateGame: React.FC = () => {
     });
   }
   useEffect(() => {
-    llamarAlGameID(idGame);    
+    llamarAlGameID(idGame); 
   }, [idGame]);
 
   const handleChange = (
