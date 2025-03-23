@@ -361,16 +361,4 @@ class GameController{
             return;
         }
     }
-                $game->image = base64_encode($game->image);
-                return new GeneralResponse("Proceso exitoso", 200, $game);
-            } else {
-                throw new BadRequestResponse("Juego no encotrado");
-            }
-        } else {
-            throw new BadRequestResponse("Método no permitido");
-        }
-    } catch (Exception $e) {
-        throw $e;
-    }
-}
 }
