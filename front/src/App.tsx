@@ -8,6 +8,7 @@ import Home from "./pages/Home/Home";
 import Games from "./pages/Games/Games";
 import CreateGame from "./components/CreateGame/CreateGame";
 import UpdateGame from "./components/UpdateGame/UpdateGame";
+import GameFound from "./components/GameFound/GameFoud";
 function App() {
   const location = useLocation();
   const [showLoading, setShowLoading] = useState({ display: "none" });
@@ -33,6 +34,10 @@ function App() {
         <Route
           path="/Games/create"
           element={<CreateGame />}
+        />
+         <Route
+          path="/Games/details/:id"
+          element={<GameFound />}
         />
         <Route
           path="/Games/update/:id"
