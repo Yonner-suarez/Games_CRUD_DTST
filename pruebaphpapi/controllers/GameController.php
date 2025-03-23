@@ -194,14 +194,14 @@ class GameController{
                 return;
             }
 
-            $id = intval($_GET['id']); // Asegurar que sea un número entero
+            $id =  $_GET['id']; // Asegurar que sea un número entero
 
             // Conexión a la base de datos
             global $host, $dbUser, $dbPassword, $dbName, $dbPort;
             $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
 
             if ($conn->connect_error) {
-                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error]);
                 return;
             }
 
@@ -210,7 +210,7 @@ class GameController{
                            g.releaseYear, g.image, c.id as console_id, c.name as console_name
                     FROM crud_games g
                     INNER JOIN crud_consoles c ON g.console_id = c.id
-                    WHERE g.id = ?";
+                    WHERE g.code LIKE ?";
             
             $stmt = $conn->prepare($sql);
 
@@ -248,7 +248,7 @@ class GameController{
                 $game->image = base64_encode($game->image);
                 return new GeneralResponse("Proceso exitoso", 200, $game);
             } else {
-                Middleware::jsonMiddleware(['error' => 'Juego no encontrado'], 404);
+                throw new BadRequestResponse("Juego no encotrado");
             }
         } else {
             throw new BadRequestResponse("Método no permitido");
@@ -257,6 +257,4 @@ class GameController{
         throw $e;
     }
 }
-
-
 }

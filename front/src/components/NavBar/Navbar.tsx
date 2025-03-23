@@ -1,20 +1,35 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
+import { getGamebyid } from "../../helpers/function";
+import logo from "../../../assets/logo.jpeg"
+import Loader from "../Loader/Loader";
 
 const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [gameFunded, setGameFunded] = useState({})
+  const [showLoading, setShowLoading] = useState({ display: "none" });
   const location = useLocation();
+  const navigate = useNavigate();
 
   const shouldShowSearch = !location.pathname.includes("/Games/update") && !location.pathname.includes("/Games/create");
 
-  const handleSearch = () => {
-    console.log("Buscando juego con ID:", searchTerm);
-    // TODO: Implementar la lógica de búsqueda del juego por ID
+  const handleSearch = async () => {
+    setShowLoading({display: "block"})
+    const response = await getGamebyid(searchTerm);
+    response.data && setGameFunded(response.data);
+    setShowLoading({display: "none"})
+    navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded } });
+
   };
+
+  const handleHome = () => {
+    navigate(`/`);
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       handleSearch();
     }
   };
@@ -23,7 +38,9 @@ const Navbar: React.FC = () => {
     <nav className={styles.navbar}>
       <form className={styles.form_navbar_style} role="search">
         {shouldShowSearch && (
-          <input
+          <>
+            <Loader estilo={showLoading} />
+            <input
             className={styles.input_search_navbar_style}
             type="search"
             placeholder="Ingresa el ID del Juego"
@@ -32,7 +49,10 @@ const Navbar: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleSearch}
-          />
+            />
+            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"20px"}} />
+          </>
+          
         )}
       </form>
     </nav>

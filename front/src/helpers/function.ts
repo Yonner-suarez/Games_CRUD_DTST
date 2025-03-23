@@ -3,9 +3,9 @@ import { BASE_URL, admin } from "./api";
 import axios from "axios";
 
 
-export const getGamebyid = async () => {
+export const getGamebyid = async (idGame: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}${admin.GETGAMEBYID}?id=5`);
+    const response = await axios.get(`${BASE_URL}${admin.GETGAMEBYID}?id=${idGame}`);
     return response.data.data; 
   } catch (error) {
     handleError(error);
@@ -21,7 +21,6 @@ export const getConsoles = async () => {
     handleError(error);
   }
 };
-
 
 export const createGame = async (body: any) => {
   try {
@@ -145,7 +144,7 @@ export const handleError = (error: any = null) => {
   Swal.fire({
     icon: "error",
     title: "¡Error!",
-    text: error?.error || "Ocurrió un error inesperado.",
+    text: error?.response?.data?.error || "Ocurrió un error inesperado.",
     confirmButtonColor: "#d33",
     confirmButtonText: "Cerrar"
   });
