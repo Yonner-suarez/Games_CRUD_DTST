@@ -194,7 +194,7 @@ class GameController{
                     return;
                 }
 
-                $id = intval($_GET['id']); // Asegurar que sea un número entero
+                $id =  $_GET['id']; // Asegurar que sea un número entero
 
                 // Conexión a la base de datos
                 global $host, $dbUser, $dbPassword, $dbName, $dbPort;
@@ -204,6 +204,10 @@ class GameController{
                     Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
                     return;
                 }
+            if ($conn->connect_error) {
+                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error]);
+                return;
+            }
 
                 // Consulta para obtener el juego junto con la consola
                 $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers, 
@@ -213,6 +217,14 @@ class GameController{
                         WHERE g.id = ?"; 
                 
                 $stmt = $conn->prepare($sql);
+            // Consulta para obtener el juego junto con la consola
+            $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers, 
+                           g.releaseYear, g.image, c.id as console_id, c.name as console_name
+                    FROM crud_games g
+                    INNER JOIN crud_consoles c ON g.console_id = c.id
+                    WHERE g.code LIKE ?";
+            
+            $stmt = $conn->prepare($sql);
 
                 if (!$stmt) {
                     Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
@@ -349,4 +361,16 @@ class GameController{
             return;
         }
     }
+                $game->image = base64_encode($game->image);
+                return new GeneralResponse("Proceso exitoso", 200, $game);
+            } else {
+                throw new BadRequestResponse("Juego no encotrado");
+            }
+        } else {
+            throw new BadRequestResponse("Método no permitido");
+        }
+    } catch (Exception $e) {
+        throw $e;
+    }
+}
 }

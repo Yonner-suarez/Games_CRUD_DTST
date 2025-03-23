@@ -1,7 +1,7 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import Games from "../Games/Games"; 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -19,8 +19,8 @@ const Home: React.FC = () => {
 
   return (
     <>
+      
       <Games/>
-      <button onClick={() => navigate("/Games/create")}> Crear Juego</button>
     </>
   );
 };
