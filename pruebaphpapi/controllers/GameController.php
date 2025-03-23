@@ -307,12 +307,13 @@ class GameController{
         if ($method_request == "GET"){
             global $host, $dbUser, $dbPassword, $dbName, $dbPort;
             $conn = new mysqli ($host, $dbUser, $dbPassword, $dbName, $dbPort);
-            
+           
             if ($conn->connect_error){
                 Middleware::jsonMiddleware(['error'=>'Error en la base de datos' . $conn->connect_error], 500);
                 return;
             }
-            $sql = "SELECT * FROM crud games";
+            $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers,
+                           g.releaseYear, g.image, c.id as console_id, c.name as console_name FROM crud_games as g INNER JOIN crud_consoles AS c ON c.id = g.id";
             $stmt = $conn->prepare($sql);
             if (!$stmt){
                 Middleware::jsonMiddleware(['error'=>'Error en la consulta' . $conn->error], 500);
@@ -321,13 +322,25 @@ class GameController{
             $stmt->execute();
             $result = $stmt->get_result();
             $games = [];
-            while ($row = $result->fetch_assoc()){
-                $games[] = $row;
+            while ($gameData = $result->fetch_assoc()){
+                $console = new Console($gameData['console_id'], $gameData['console_name']);
+                $game = new Game(
+                    $gameData['name'],
+                    $gameData['description'],
+                    $gameData['code'],
+                    $gameData['numberOfPlayers'],
+                    $gameData['releaseYear'],
+                    $gameData['image'],
+                    $console
+                );
+                $game->image = base64_encode($game->image);
+ 
+                array_push($games, $game);
             }
-            if (count($games)>0){
-                Middleware::jsonMiddleware($games, 200); // código de estado "OK"
+            if (count($games) > 0){
+                return new GeneralResponse("Proceso exitoso", 200, $games);
             } else {
-                Middleware::jsonMiddleware(['mensaje'=>'No se encontraron Juegos'], 404);
+                throw new BadRequestResponse("No hay jjuegos guardados");
             }
             $stmt->close();
             $conn->close();
