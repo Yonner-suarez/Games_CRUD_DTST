@@ -6,7 +6,7 @@ class GameController{
 
   public function create()
   {
-     $response = null;
+    $response = null;
     try {
       $method_request = $_SERVER['REQUEST_METHOD'];
       if($method_request == "POST")
@@ -64,8 +64,8 @@ class GameController{
         } catch (Exception $e) {
             throw $e;
         }
-      }
-     public function update()
+    }
+    public function update()
       {
         $response = null;
         try {
@@ -138,7 +138,7 @@ class GameController{
         }
     }
 
-      public function consoles() {
+    public function consoles() {
         try {
           $method_request = $_SERVER['REQUEST_METHOD'];
           if($method_request == "GET")
@@ -182,124 +182,158 @@ class GameController{
         }
     }
 
- public function gamesById() {
-    try {
-        // Obtener el método de la solicitud
+    public function gamesById() {
+        try {
+            // Obtener el método de la solicitud
+            $method_request = $_SERVER['REQUEST_METHOD'];
+
+            if ($method_request === "GET") {
+                // Obtener el ID del juego desde los parámetros de la URL
+                if (!isset($_GET['id']) || empty($_GET['id'])) {
+                    Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
+                    return;
+                }
+
+                $id = intval($_GET['id']); // Asegurar que sea un número entero
+
+                // Conexión a la base de datos
+                global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+                $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
+
+                if ($conn->connect_error) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                    return;
+                }
+
+                // Consulta para obtener el juego junto con la consola
+                $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers, 
+                            g.releaseYear, g.image, c.id as console_id, c.name as console_name
+                        FROM crud_games g
+                        INNER JOIN crud_consoles c ON g.console_id = c.id
+                        WHERE g.id = ?"; 
+                
+                $stmt = $conn->prepare($sql);
+
+                if (!$stmt) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+                    return;
+                }
+
+                // Pasar el ID como parámetro a la consulta
+                $stmt->bind_param("i", $id);
+
+                if (!$stmt->execute()) {
+                    Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
+                    return;
+                }
+
+                $result = $stmt->get_result();
+                $gameData = $result->fetch_assoc();
+
+                $stmt->close();
+                $conn->close();
+
+                if ($gameData) {
+                    $console = new Console($gameData['console_id'], $gameData['console_name']);
+                    $game = new Game(
+                        $gameData['name'],
+                        $gameData['description'],
+                        $gameData['code'],
+                        $gameData['numberOfPlayers'],
+                        $gameData['releaseYear'],
+                        $gameData['image'],
+                        $console
+                    );
+
+                    $game->image = base64_encode($game->image);
+                    return new GeneralResponse("Proceso exitoso", 200, $game);
+                } else {
+                    Middleware::jsonMiddleware(['error' => 'Juego no encontrado'], 404);
+                }
+            } else {
+                throw new BadRequestResponse("Método no permitido");
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    public function deleteGames() {
+        try {
+            $method_request = $_SERVER['REQUEST_METHOD'];
+            if ($method_request == "DELETE") {
+                // Obtener el ID desde la URL
+                if (!isset($_GET['id']) || empty($_GET['id'])) {
+                    Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
+                    return;
+                }
+                $id = $_GET['id'];
+                global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+                $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
+    
+                if ($conn->connect_error) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                    return;
+                }
+    
+                $sql = "DELETE FROM crud_games WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                if (!$stmt) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+                    return;
+                }
+    
+                $stmt->bind_param("i", $id);
+                if (!$stmt->execute()) {
+                    Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
+                    return;
+                }
+                if ($stmt->affected_rows > 0) {
+                    Middleware::jsonMiddleware(['message' => 'Juego eliminado exitosamente'], 200);
+                } else {
+                    Middleware::jsonMiddleware(['message' => 'No se encontró un Juego con ese ID'], 404);
+                }
+    
+                $stmt->close();
+                $conn->close();
+            } else {
+                throw new BadRequestResponse("Método no permitido");
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    public function listGames() {
         $method_request = $_SERVER['REQUEST_METHOD'];
-
-        if ($method_request === "GET") {
-            // Obtener el ID del juego desde los parámetros de la URL
-            if (!isset($_GET['id']) || empty($_GET['id'])) {
-                Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
-                return;
-            }
-
-            $id = intval($_GET['id']); // Asegurar que sea un número entero
-
-            // Conexión a la base de datos
+        if ($method_request == "GET"){
             global $host, $dbUser, $dbPassword, $dbName, $dbPort;
-            $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
-
-            if ($conn->connect_error) {
-                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
-                return;
-            }
-
-            // Consulta para obtener el juego junto con la consola
-            $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers, 
-                           g.releaseYear, g.image, c.id as console_id, c.name as console_name
-                    FROM crud_games g
-                    INNER JOIN crud_consoles c ON g.console_id = c.id
-                    WHERE g.id = ?"; 
+            $conn = new mysqli ($host, $dbUser, $dbPassword, $dbName, $dbPort);
             
+            if ($conn->connect_error){
+                Middleware::jsonMiddleware(['error'=>'Error en la base de datos' . $conn->connect_error], 500);
+                return;
+            }
+            $sql = "SELECT * FROM crud games";
             $stmt = $conn->prepare($sql);
-
-            if (!$stmt) {
-                Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+            if (!$stmt){
+                Middleware::jsonMiddleware(['error'=>'Error en la consulta' . $conn->error], 500);
                 return;
             }
-
-            // Pasar el ID como parámetro a la consulta
-            $stmt->bind_param("i", $id);
-
-            if (!$stmt->execute()) {
-                Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
-                return;
-            }
-
+            $stmt->execute();
             $result = $stmt->get_result();
-            $gameData = $result->fetch_assoc();
-
-            $stmt->close();
-            $conn->close();
-
-            if ($gameData) {
-                $console = new Console($gameData['console_id'], $gameData['console_name']);
-                $game = new Game(
-                    $gameData['name'],
-                    $gameData['description'],
-                    $gameData['code'],
-                    $gameData['numberOfPlayers'],
-                    $gameData['releaseYear'],
-                    $gameData['image'],
-                    $console
-                );
-
-                $game->image = base64_encode($game->image);
-                return new GeneralResponse("Proceso exitoso", 200, $game);
+            $games = [];
+            while ($row = $result->fetch_assoc()){
+                $games[] = $row;
+            }
+            if (count($games)>0){
+                Middleware::jsonMiddleware($games, 200); // código de estado "OK"
             } else {
-                Middleware::jsonMiddleware(['error' => 'Juego no encontrado'], 404);
+                Middleware::jsonMiddleware(['mensaje'=>'No se encontraron Juegos'], 404);
             }
-        } else {
-            throw new BadRequestResponse("Método no permitido");
-        }
-    } catch (Exception $e) {
-        throw $e;
-    }
-}
-public function deletegame() {
-    try {
-        $method_request = $_SERVER['REQUEST_METHOD'];
-        if ($method_request == "DELETE") {
-            // Obtener el ID desde la URL
-            if (!isset($_GET['id']) || empty($_GET['id'])) {
-                Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
-                return;
-            }
-            $id = $_GET['id'];
-            global $host, $dbUser, $dbPassword, $dbName, $dbPort;
-            $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
- 
-            if ($conn->connect_error) {
-                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
-                return;
-            }
- 
-            $sql = "DELETE FROM crud_games WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
-                return;
-            }
- 
-            $stmt->bind_param("i", $id);
-            if (!$stmt->execute()) {
-                Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
-                return;
-            }
-            if ($stmt->affected_rows > 0) {
-                Middleware::jsonMiddleware(['message' => 'Juego eliminado exitosamente'], 200);
-            } else {
-                Middleware::jsonMiddleware(['message' => 'No se encontró un Juego con ese ID'], 404);
-            }
- 
             $stmt->close();
             $conn->close();
         } else {
-            throw new BadRequestResponse("Método no permitido");
+            Middleware :: jsonMiddleware(['error'=>'Método no permitido'], 405);
+            return;
         }
-    } catch (Exception $e) {
-        throw $e;
     }
-}
 }
