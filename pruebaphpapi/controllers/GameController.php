@@ -140,45 +140,43 @@ class GameController{
 
     public function consoles() {
         try {
-          $method_request = $_SERVER['REQUEST_METHOD'];
-          if($method_request == "GET")
-          {
-            global $host, $dbUser, $dbPassword, $dbName, $dbPort;
-            $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
+            $method_request = $_SERVER['REQUEST_METHOD'];
+            if ($method_request == "GET") {
+                global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+                $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
 
-            if ($conn->connect_error) {
-                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
-                return;
+                if ($conn->connect_error) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                    return;
+                }
+
+                $sql = "SELECT id, name FROM crud_consoles"; // Asegurarse de que la tabla y columnas sean correctas
+                $stmt = $conn->prepare($sql);
+                if (!$stmt) {
+                    Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+                    return;
+                }
+
+                if (!$stmt->execute()) {
+                    Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
+                    return;
+                }
+
+                $result = $stmt->get_result();
+                $consoles = [];
+                while ($row = $result->fetch_assoc()) {
+                    $consoles[] = $row; // Asegurarse de que los datos se agreguen correctamente
+                }
+
+                $stmt->close();
+                $conn->close();
+
+                Middleware::jsonMiddleware(['message' => 'Consulta exitosa', 'data' => $consoles], 200);
+            } else {
+                throw new BadRequestResponse("Método no permitido");
             }
-
-            $sql = "SELECT id, name FROM crud_consoles";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
-                return;
-            }
-
-            if (!$stmt->execute()) {
-                Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
-                return;
-            }
-
-            $result = $stmt->get_result();
-            $consoles = [];
-            while ($row = $result->fetch_assoc()) {
-                $consoles[] = $row;
-            }
-
-            $stmt->close();
-            $conn->close();
-
-            Middleware::jsonMiddleware(['message' => 'Consulta exitosa', 'data' => $consoles], 200);
-          }
-
-          throw new BadRequestResponse("Metodo no encontrado");
-
         } catch (Exception $e) {
-            throw $e;
+            Middleware::jsonMiddleware(['error' => $e->getMessage()], 500);
         }
     }
 

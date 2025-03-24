@@ -16,9 +16,19 @@ export const getGamebyid = async (idGame: string) => {
 export const getConsoles = async () => {
   try {
     const response = await axios.get(`${BASE_URL}${admin.CONSOLES}`);
-    return response.data; 
+    if (!response.data || !Array.isArray(response.data.data)) {
+      console.error("La API no devolvió un array de consolas válido.");
+      return [];
+    }
+    console.log("Consolas obtenidas de la API:", response.data.data); // Depuración
+    return response.data.data.map((console) => ({
+      id: console.id, // Asegurarse de que las propiedades coincidan con las devueltas por la API
+      name: console.name,
+    }));
   } catch (error) {
+    console.error("Error al obtener consolas:", error);
     handleError(error);
+    return [];
   }
 };
 
@@ -47,6 +57,7 @@ export const createGame = async (body: any) => {
     return response.status;
   } catch (error) {
     handleError(error);
+    return null;
   }
 };
 
@@ -107,12 +118,16 @@ export const ValidateFormFunc = (
 ) => {
   const validateForm = { ...validateForms };
 
+  // Validar código del juego
+  if (!form.code) validateForm.code = "Debe ingresar el código del juego";
+  else validateForm.code = "";
+
   //name
   if (!form.name) validateForm.name = "Debe ingresar el nombre del juego";
   else validateForm.name = "";
 
   //code of game
-  if (!form.code) validateForm.apellido = "Debe ingresar el codigo del juego";
+  if (!form.code) validateForm.code = "Debe ingresar el codigo del juego";
   else validateForm.code = "";
 
   //number of players
@@ -199,4 +214,3 @@ export const handleError = (error: any = null) => {
         return null;
       }
     };
-  

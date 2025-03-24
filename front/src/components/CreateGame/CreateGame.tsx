@@ -85,6 +85,12 @@ const CreateGame: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setShowLoading({ display: "block" });
     e.preventDefault();
+
+    if (!uploadedFile.Image || Object.keys(uploadedFile.Image).length === 0) {
+      Swal.fire("Error", "Debes cargar una imagen válida", "error");
+      setShowLoading({display: "none"});
+      return;
+    }
     if (!isFileLoaded || !uploadedFile.Image || Object.keys(uploadedFile.Image).length === 0) {
         return errorImage();
       }
@@ -241,7 +247,7 @@ const CreateGame: React.FC = () => {
 
   return (
     <>
-      <Loader estilo={showLoading} />
+      <Loader show={showLoading.display === "block"} estilo={showLoading} /> {/* Ajustar visibilidad del Loader */}
       <div className={styles.div_completar_datos}>
         <form className={styles.f_general_style}>
           <h6 className={styles.h6_completar_datos}>

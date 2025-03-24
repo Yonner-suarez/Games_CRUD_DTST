@@ -1,7 +1,17 @@
+import React from "react";
 import styles from "./Loader.module.css";
-import LoaderProps from "./intarefaceLoader";
 
-const style = (show: any) => ({ display: show ? "block" : "none" });
+interface LoaderProps {
+  show: boolean;
+  estilo?: React.CSSProperties;
+  mensaje?: string; // Nueva prop para el mensaje
+}
+
+const style = (show: boolean): React.CSSProperties => {
+  return {
+    display: show ? "flex" : "none", // Muestra u oculta el Loader
+  };
+};
 
 const Loader: React.FC<LoaderProps> = (props) => {
   return (
@@ -11,8 +21,8 @@ const Loader: React.FC<LoaderProps> = (props) => {
     >
       <div className={styles.loading}>
         <span className={styles.span_style_loader}>
-          <span className={styles.loader}></span>
-          <span className={styles.cargando}>Cargando....</span>
+          <span className={styles.loader}></span> {/* Asegúrate de que este estilo no esté duplicado */}
+          {props.mensaje && <span className={styles.cargando}>{props.mensaje}</span>} {/* Mostrar mensaje solo si existe */}
         </span>
       </div>
     </div>
