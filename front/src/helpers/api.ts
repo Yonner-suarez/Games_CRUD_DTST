@@ -6,7 +6,7 @@ export const admin: IAdminRoutes = {
   UPDATEGAME: "/GAMES_CRUD_DTST/pruebaphpapi/game/update",
   CONSOLES: "/GAMES_CRUD_DTST/pruebaphpapi/game/consoles",
   GETGAMEBYID: "/GAMES_CRUD_DTST/pruebaphpapi/game/gamesById",
-  DELETEGAMES: "/Games_CRUD_DTST/pruebaphpapi/game/deletegame",
+  DELETEGAMES: "/GAMES_CRUD_DTST/pruebaphpapi/game/deleteGames",
   LISTGAMES: "/Games_CRUD_DTST/pruebaphpapi/game/listGames",
 };
 //hola mundo

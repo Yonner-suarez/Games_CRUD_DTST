@@ -150,7 +150,7 @@ class GameController{
                     return;
                 }
 
-                $sql = "SELECT id, name FROM crud_consoles"; // Asegurarse de que la tabla y columnas sean correctas
+                $sql = "SELECT id, name FROM crud_consoles"; // Consulta para obtener consolas
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
@@ -165,7 +165,7 @@ class GameController{
                 $result = $stmt->get_result();
                 $consoles = [];
                 while ($row = $result->fetch_assoc()) {
-                    $consoles[] = $row; // Asegurarse de que los datos se agreguen correctamente
+                    $consoles[] = $row;
                 }
 
                 $stmt->close();
@@ -269,14 +269,22 @@ class GameController{
     }
     public function deleteGames() {
         try {
+            // Agregar encabezados CORS
+            header("Access-Control-Allow-Origin: *");
+            header("Access-Control-Allow-Methods: DELETE, GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
             $method_request = $_SERVER['REQUEST_METHOD'];
             if ($method_request == "DELETE") {
                 // Obtener el ID desde la URL
                 if (!isset($_GET['id']) || empty($_GET['id'])) {
+                    error_log("El parámetro ID no se recibió o está vacío."); // Log para depuración
                     Middleware::jsonMiddleware(['error' => 'ID es requerido'], 400);
                     return;
                 }
                 $id = $_GET['id'];
+                error_log("ID recibido para eliminar: " . $id); // Log para depuración
+
                 global $host, $dbUser, $dbPassword, $dbName, $dbPort;
                 $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
     
@@ -297,9 +305,12 @@ class GameController{
                     Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
                     return;
                 }
+    
                 if ($stmt->affected_rows > 0) {
+                    error_log("Juego eliminado correctamente con ID: " . $id); // Log para depuración
                     Middleware::jsonMiddleware(['message' => 'Juego eliminado exitosamente'], 200);
                 } else {
+                    error_log("No se encontró un juego con el ID: " . $id); // Log para depuración
                     Middleware::jsonMiddleware(['message' => 'No se encontró un Juego con ese ID'], 404);
                 }
     
@@ -309,10 +320,11 @@ class GameController{
                 throw new BadRequestResponse("Método no permitido");
             }
         } catch (Exception $e) {
+            error_log("Error en deleteGames: " . $e->getMessage()); // Log para depuración
             throw $e;
         }
     }
-    public function listGames() {
+    public function listGames() { // Cambiar el nombre del método de "gameList" a "listGames"
         $method_request = $_SERVER['REQUEST_METHOD'];
         if ($method_request == "GET"){
             global $host, $dbUser, $dbPassword, $dbName, $dbPort;
@@ -333,6 +345,7 @@ class GameController{
             $result = $stmt->get_result();
             $games = [];
             while ($gameData = $result->fetch_assoc()){
+                error_log("Juego obtenido de la base de datos: " . json_encode($gameData)); // Log para depuración
                 $console = new Console($gameData['console_id'], $gameData['console_name']);
                 $game = new Game(
                     $gameData['name'],
@@ -343,6 +356,7 @@ class GameController{
                     $gameData['image'],
                     $console
                 );
+                $game->id = $gameData['id']; // Asegurarse de incluir el identificador del juego
                 $game->image = base64_encode($game->image);
  
                 array_push($games, $game);
