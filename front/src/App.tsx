@@ -40,7 +40,7 @@ function App() {
           element={<GameFound />}
         />
         <Route
-          path="/Games/update/:code"
+          path="/Games/update/:id"
           element={<UpdateGame />}
         />
         <Route

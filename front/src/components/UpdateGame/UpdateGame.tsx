@@ -45,9 +45,9 @@ const UpdateGame: React.FC = () => {
       const game = await getGamebyid(id); // Obtener los datos del juego
       const consoles = await getConsoles(); // Obtener las consolas
 
-      console.log("Consolas obtenidas de la API:", consoles); // Depuración
-  
-      let base64String = game.image;
+      console.log(game)
+
+      let base64String = game?.image;
       if (!base64String.startsWith("data:image")) {
         base64String = `data:image/png;base64,${base64String}`;
       }
