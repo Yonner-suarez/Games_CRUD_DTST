@@ -13,17 +13,17 @@ export const getGamebyid = async (idGame: string) => {
 };
 
 
-export const getConsoles = async () => {
+export const getConsoles = async (): Promise<Console[]> => {
   try {
     const response = await axios.get(`${BASE_URL}${admin.CONSOLES}`);
+    console.log("Respuesta de la API (consolas):", response.data); // Depuración
     if (!response.data || !Array.isArray(response.data.data)) {
       console.error("La API no devolvió un array de consolas válido.");
       return [];
     }
-    console.log("Consolas obtenidas de la API:", response.data.data); // Depuración
-    return response.data.data.map((console) => ({
-      id: console.id, // Asegurarse de que las propiedades coincidan con las devueltas por la API
-      name: console.name,
+    return response.data.data.map((consoleItem: Console) => ({
+      id: consoleItem.id, // Asegúrate de que las propiedades coincidan con las devueltas por la API
+      name: consoleItem.name,
     }));
   } catch (error) {
     console.error("Error al obtener consolas:", error);
@@ -93,20 +93,48 @@ export const updateGame = async (body: any, id: number) => {
 
 export const listGames = async () => {
   try {
-    const response = await axios.get (`${BASE_URL}${admin.LISTGAMES}`)
-    const games = response.data.data;
+    const response = await axios.get(`${BASE_URL}${admin.LISTGAMES}`);
+    console.log("Datos devueltos por la API (listGames):", response.data); // Log para depuración
+    const games = response.data.data; // Se espera que los datos incluyan el campo "id"
     return games;
   } catch (error) {
     handleError(error);
   }
 };
 
-export const deleteGames = async (gameId: number) => {
+export const deleteGames = async (id: number) => {
   try {
-    let response = await axios.delete (`${BASE_URL}${admin.DELETEGAMES}/${gameId}`);
-    return response
+    // Validar que el ID del juego sea válido
+    if (!id || typeof id !== "number") {
+      console.error("El ID del juego no está definido o no es válido:", id); // Log para depuración
+      return false;
+    }
+
+    // Realizar la solicitud DELETE directamente
+    const response = await axios.delete(`${BASE_URL}${admin.DELETEGAMES}?id=${id}`, {
+      headers: {
+        "Content-Type": "application/json", // Asegúrate de incluir encabezados necesarios
+      },
+    });
+
+    console.log("Respuesta de la API al eliminar el juego:", response); // Log para depuración
+
+    // Verificar el estado de la respuesta
+    if (response.status === 200) {
+      console.log("Juego eliminado exitosamente:", response.data);
+      return true; // Indicar éxito
+    } else {
+      console.error("Error al eliminar el juego. Respuesta de la API:", response.data);
+      return false; // Indicar fallo
+    }
   } catch (error) {
-    handleError(error);
+    // Manejar errores de la solicitud
+    console.error("Error al eliminar el juego:", error); // Log para depuración
+    if (error.response) {
+      console.error("Detalles del error:", error.response.data); // Log de la respuesta del servidor
+    }
+    handleError(error); // Mostrar mensaje de error al usuario
+    return false; // Indicar fallo
   }
 };
 

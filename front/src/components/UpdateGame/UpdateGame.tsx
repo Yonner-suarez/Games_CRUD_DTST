@@ -40,7 +40,7 @@ const UpdateGame: React.FC = () => {
   });
 
    
-  const llamarAlGameID = async (id: int) => {
+  const llamarAlGameID = async (id: number) => {
     try {
       const game = await getGamebyid(id); // Obtener los datos del juego
       const consoles = await getConsoles(); // Obtener las consolas
@@ -59,12 +59,12 @@ const UpdateGame: React.FC = () => {
   
       setForm({
         ...form,
-        code: game.code || 0,
+        code: game.code || "",
         name: game.name || "",
         defaultConsole: consoles.find((c) => c.id === game.consoleId) || { value: -1, label: "--Tipo de Consola--" },
         description: game.description || "",
-        releaseYear: game.releaseYear || 0,
-        numberOfPlayers: game.numberOfPlayers || 0,
+        releaseYear: game.releaseYear || "",
+        numberOfPlayers: game.numberOfPlayers || "",
         Image: game.image || {},
         consoles: consoles.map((console) => ({
           value: console.id,
