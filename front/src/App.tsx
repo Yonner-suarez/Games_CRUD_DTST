@@ -26,7 +26,7 @@ function App() {
     <>
       <Loader
         estilo={showLoading}
-        show={showLoading.display === "block" ? true : false}
+        show={showLoading.display === "block"} // Asegurar que el Loader dependa del estado
       ></Loader>
       <Navbar />
       <Routes key={location.pathname}>
