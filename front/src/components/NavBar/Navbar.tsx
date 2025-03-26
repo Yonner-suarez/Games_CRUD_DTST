@@ -21,8 +21,9 @@ const Navbar: React.FC = () => {
     const response = await getGamebyid(searchTerm);
     setShowLoading({ display: "none" });
 
-    if (response.data) {
-      navigate(`/Games/details/${searchTerm}`, { state: { game: response.data } });
+    if (response) {
+      setGameFunded(response  )
+      navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded} });
     } else {
       console.error("No se encontró el juego.");
     }
