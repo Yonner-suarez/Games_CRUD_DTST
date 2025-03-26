@@ -14,7 +14,7 @@ export const axiosInstance = axios.create({
 export const getGamebyid = async (idGame: string) => {
   try {
     const response = await axios.get(`${BASE_URL}${admin.GETGAMEBYID}?id=${idGame}`);
-    return response.data.data;
+    return response.data.data.data; 
   } catch (error) {
     handleError(error);
   }
