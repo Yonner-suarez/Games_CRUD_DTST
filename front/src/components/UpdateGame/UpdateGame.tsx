@@ -11,7 +11,7 @@ import DropZone from "../DropZone/DropZone";
 import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateGame: React.FC = () => {
-  const {id: idGame} = useParams();
+  const { id: idGame } = useParams();
   const navigate = useNavigate();
   const [uploadedFile, setUploadedFile] = useState({});
   const [isFileLoaded, setIsFileLoaded] = useState(false);
@@ -76,7 +76,7 @@ const UpdateGame: React.FC = () => {
     }
   }
   useEffect(() => {
-    llamarAlGameID(idGame);    
+    llamarAlGameID(parseInt(idGame)); // Convertir idGame a entero
   }, [idGame]);
 
   const handleChange = (

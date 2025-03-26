@@ -1,111 +1,106 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader/Loader";
-import { deleteGames, listGames } from "../../helpers/function";
-import "./Gamestyles.css";
-
-// Define el tipo para los juegos
-interface Game {
-  id: number;
-  name: string;
-  code: string;
-  description: string;
-  releaseYear: number;
-  numberOfPlayers: number;
-  image: string;
-}
-
+import { delGames, gameList, handleError } from "../../helpers/function";
+import Swal from "sweetalert2";
+ 
 const Games: React.FC = () => {
   const navigate = useNavigate();
-  const [showLoading, setShowLoading] = useState(false);
-  const [gamesList, setGamesList] = useState<Game[]>([]); // Usa el tipo explícito para el estado
-
-  useEffect(() => {
-    const GAMES = async () => {
-      try {
-        console.log("Mostrando Loader...");
-        setShowLoading(true);
-        let response = await listGames();
-        console.log("Datos obtenidos de la API (gamesList):", response); // Log para depuración
-        setGamesList(response.data); // Asegúrate de que los datos incluyan el campo "id"
+  const [showLoading, setShowLoading] = useState({ display: "none" });
+  const [gamesList, setGamesList] = useState([])
+ 
+  const lisgames = async () => {  
+      try{
+      setShowLoading({ display: "block" })
+      const gamelist_request = await gameList();
+ 
+      setGamesList(gamelist_request.data.data);
+      setShowLoading({ display: "none" })
       } catch (error) {
-        console.error("Error al cargar los juegos", error);
-      } finally {
-        setShowLoading(false);
-      }
+        handleError(error);
+        setShowLoading({ display: "none" })
+  }
     };
-    GAMES();
+ 
+ 
+  useEffect(() => {
+   
+    lisgames();
+ 
   }, []);
-
+ 
+const delGame = async (code: any) => {
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "No podrás revertir esta acción.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar"
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await delGames(code);
+        setGamesList((prevGames) => prevGames.filter((game) => game.code !== code));
+        Swal.fire("Eliminado", "El juego ha sido eliminado.", "success");
+      } catch (error) {
+        handleError(error);
+      }
+    }
+  });
+};
+ 
   return (
-    <>
-      <Loader show={showLoading} estilo={{ display: "block" }} mensaje="Cargando..." /> {/* Solo una instancia del Loader */}
+  <>
+    <Loader estilo={showLoading} />
       <h1>LISTA DE GAMES</h1>
-      <button onClick={() => navigate("/Games/create")}> Crear Juego</button>
-      <div className="card-container">
-        {gamesList?.map((game) => (
-          <div key={game.id} className="card">
-            <img
-              src={game.image} // Usa una imagen por defecto si `image` está vacía
-              alt={game.name}
-              className="card-image"
-            />
-            <div className="card-content">
-              <h3>{game.name}</h3>
-              <p><strong>Código:</strong>{game.code}</p>
-              <p>{game.description}</p>
-              <p><strong>Año de lanzamiento:</strong> {game.releaseYear}</p>
-              <p><strong>Jugadores:</strong> {game.numberOfPlayers}</p>
-              <div className="card-buttons">
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => navigate(`Games/update/${game?.code}`)}
-                >
-                  Actualizar
-                </button>
-                <button
-                  className="btn btn-info btn-sm text-white"
-                  onClick={() =>
-                    navigate(`/Games/details/${game?.code}`, { state: { game: game } })
-                  }
-                >
-                  Detalles
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={async () => {
-                    if (!game.id) {
-                      console.error("El ID del juego no está definido.");
-                      alert("No se puede eliminar el juego porque el ID no está definido.");
-                      return;
-                    }
-                    console.log("Intentando eliminar el juego con ID:", game.id); // Log para depuración
-                    if (window.confirm("¿Estás seguro de que deseas borrar este juego?")) {
-                      try {
-                        const isDeleted = await deleteGames(game.id); // Llamar a la API para eliminar el juego
-                        if (isDeleted) {
-                          console.log("Actualizando lista de juegos después de eliminar el juego con ID:", game.id);
-                          setGamesList((prevGames) => prevGames.filter((g) => g.id !== game.id)); // Actualizar el estado localmente
-                          alert("Juego eliminado exitosamente.");
-                        } else {
-                          alert("No se pudo eliminar el juego. Inténtalo nuevamente.");
-                        }
-                      } catch (error) {
-                        console.error("Error al eliminar el juego:", error);
-                        alert("Hubo un error al intentar eliminar el juego.");
-                      }
-                    }
-                  }}
-                >
-                  Borrar
-                </button>
-              </div>
+      <button onClick={() => navigate("/Games/create")}> Crear Juego</button>  
+    {gamesList.map((game, index) => (
+  <div key={index} className="container mt-2">
+    <div className="card shadow-sm" style={{ maxWidth: "500px", margin: "auto" }}>
+      <div className="row g-0">
+        {/* Imagen del juego */}
+        <div className="col-md-3 d-flex align-items-center justify-content-center p-2">
+          <img
+            src={`data:image/png;base64,${game?.image}`}
+            alt={game?.name}
+            className="img-fluid rounded"
+            style={{ maxHeight: "120px" }}
+          />
+        </div>
+ 
+        {/* Información del juego */}
+        <div className="col-md-9">
+          <div className="card-body p-2">
+            <h6 className="card-title">{game?.name}</h6>
+            <p className="card-text mb-1"><strong>Código:</strong> {game?.code}</p>
+            <p className="card-text mb-1"><strong>Consola:</strong> {game?.console?.label}</p>
+ 
+            {/* Botones más pequeños */}
+            <div className="d-flex gap-2 mt-2">
+              <button className="btn btn-primary btn-sm" onClick={() => navigate(`Games/update/${game?.code}`)}>
+                Actualizar
+              </button>
+              <button
+                className="btn btn-info btn-sm text-white"
+                onClick={() => navigate(`/Games/details/${game?.code}`, { state: { game: game } })}
+              >
+                Detalles
+                  </button>
+              <button className="btn btn-danger btn-sm" onClick={() => delGame(game.code)}>
+                Borrar
+              </button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
-    </>
-  );
+    </div>
+  </div>
+))}
+  </>
+);
+ 
 };
-
 export default Games;
