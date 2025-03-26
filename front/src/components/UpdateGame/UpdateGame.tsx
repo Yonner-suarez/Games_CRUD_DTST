@@ -42,10 +42,8 @@ const UpdateGame: React.FC = () => {
    
   const llamarAlGameID = async (id: number) => {
     try {
-      const game = await getGamebyid(id); // Obtener los datos del juego
-      const consoles = await getConsoles(); // Obtener las consolas
-
-      console.log(game)
+      const game = await getGamebyid(id);   
+      const consoles = await getConsoles();
 
       let base64String = game?.image;
       if (!base64String.startsWith("data:image")) {
