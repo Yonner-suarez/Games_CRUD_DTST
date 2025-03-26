@@ -15,19 +15,24 @@ const Navbar: React.FC = () => {
   const shouldShowSearch = !location.pathname.includes("/Games/update") && !location.pathname.includes("/Games/create");
 
   const handleSearch = async () => {
-    try {
-      setShowLoading({display: "block"})
-      const response = await getGamebyid(searchTerm);
-      response?.data && setGameFunded(response?.data);
-      setShowLoading({display: "none"})
-      navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded } });
-  
-    } catch (error) { 
-      handleError(error)
-    }
-      
+  try {
+    setShowLoading({ display: "block" });
 
-  };
+    const response = await getGamebyid(searchTerm);
+    setShowLoading({ display: "none" });
+
+    if (response) {
+      setGameFunded(response  )
+      navigate(`/Games/details/${searchTerm}`, { state: { game: gameFunded} });
+    } else {
+      console.error("No se encontró el juego.");
+    }
+  } catch (err) {
+    setShowLoading({ display: "none" });
+    handleError(err);
+  }
+};
+
 
   const handleHome = () => {
     navigate(`/`);
@@ -56,7 +61,7 @@ const Navbar: React.FC = () => {
             onKeyDown={handleKeyDown}
             onBlur={handleSearch}
             />
-            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"20px"}} />
+            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"60px"}} />
           </>
           
         )}

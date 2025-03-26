@@ -40,10 +40,10 @@ const UpdateGame: React.FC = () => {
   });
 
    
-  const llamarAlGameID = async (id: number) => {
+  const llamarAlGameID = async (id: int) => {
     try {
-      const game = await getGamebyid(id);   
-      const consoles = await getConsoles();
+      const consoles = await getConsoles()
+    const game = await getGamebyid(id);
 
       let base64String = game?.image;
       if (!base64String.startsWith("data:image")) {
@@ -55,26 +55,26 @@ const UpdateGame: React.FC = () => {
         setUploadedFile((prevState) => ({ ...prevState, Image: file }));
       }
   
+      console.log(game)
       setForm({
-        ...form,
-        code: game.code || "",
-        name: game.name || "",
-        defaultConsole: consoles.find((c) => c.id === game.consoleId) || { value: -1, label: "--Tipo de Consola--" },
-        description: game.description || "",
-        releaseYear: game.releaseYear || "",
-        numberOfPlayers: game.numberOfPlayers || "",
-        Image: game.image || {},
-        consoles: consoles.map((console) => ({
-          value: console.id,
-          label: console.name,
-        })), // Asignar las consolas al estado
-      });
+       code: game.code || 0,
+       name:  game.name || "",
+       defaultConsole:  game.console || { value: -1, label: "--Tipo de Consola--" },       
+       description:  game.description || "",
+       releaseYear:  game.releaseYear || 0,
+       numberOfPlayers:  game.numberOfPlayers || 0,
+       Image:  game.image || {},
+       consoles: setOptionsSelect(
+         "defaultConsole",
+         consoles.data
+       ),
+     });
     } catch (error) {
-      console.error("Error al cargar el juego o las consolas:", error);
+      console.error("Error: ", error);
     }
   }
   useEffect(() => {
-    llamarAlGameID(parseInt(idGame)); // Convertir idGame a entero
+    llamarAlGameID(parseInt(idGame)); 
   }, [idGame]);
 
   const handleChange = (
