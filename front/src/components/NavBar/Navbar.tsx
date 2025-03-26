@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
       <form className={styles.form_navbar_style} role="search">
         {shouldShowSearch && (
           <>
-            <Loader estilo={showLoading} />
+            <Loader show={showLoading.display === "block"} estilo={showLoading} /> {/* Ajustar visibilidad del Loader */}
             <input
             className={styles.input_search_navbar_style}
             type="search"

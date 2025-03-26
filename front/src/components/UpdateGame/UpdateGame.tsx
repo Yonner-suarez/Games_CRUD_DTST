@@ -11,7 +11,7 @@ import DropZone from "../DropZone/DropZone";
 import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateGame: React.FC = () => {
-  const {id: idGame} = useParams();
+  const { id: idGame } = useParams();
   const navigate = useNavigate();
   const [uploadedFile, setUploadedFile] = useState({});
   const [isFileLoaded, setIsFileLoaded] = useState(false);
@@ -44,29 +44,33 @@ const UpdateGame: React.FC = () => {
     const game = await getGamebyid(id);
     const consoles = await getConsoles()
 
-    let base64String = game.data.image;
-    if (!base64String.startsWith("data:image")) {
-      base64String = `data:image/png;base64,${base64String}`;
+      let base64String = game?.image;
+      if (!base64String.startsWith("data:image")) {
+        base64String = `data:image/png;base64,${base64String}`;
+      }
+      const file = base64ToFile(base64String, "imagen.png");
+      if (file) {
+        setPreviewURL(URL.createObjectURL(file));
+        setUploadedFile((prevState) => ({ ...prevState, Image: file }));
+      }
+  
+      setForm({
+        ...form,
+        code: game.code || "",
+        name: game.name || "",
+        defaultConsole: consoles.find((c) => c.id === game.consoleId) || { value: -1, label: "--Tipo de Consola--" },
+        description: game.description || "",
+        releaseYear: game.releaseYear || "",
+        numberOfPlayers: game.numberOfPlayers || "",
+        Image: game.image || {},
+        consoles: consoles.map((console) => ({
+          value: console.id,
+          label: console.name,
+        })), // Asignar las consolas al estado
+      });
+    } catch (error) {
+      console.error("Error al cargar el juego o las consolas:", error);
     }
-    const file = base64ToFile(base64String, "imagen.png");
-    if (file) {
-      setPreviewURL(URL.createObjectURL(file))
-      setUploadedFile((prevState) => ({ ...prevState, 'Image': file }));
-    }
-
-    setForm({
-      code: game.data.code || 0,
-      name:  game.data.name || "",
-      defaultConsole:  game.data.console || { value: -1, label: "--Tipo de Consola--" },       
-      description:  game.data.description || "",
-      releaseYear:  game.data.releaseYear || 0,
-      numberOfPlayers:  game.data.numberOfPlayers || 0,
-      Image:  game.data.image || {},
-      consoles: setOptionsSelect(
-        "defaultConsole",
-        consoles.data
-      ),
-    });
   }
   useEffect(() => {
     llamarAlGameID(idGame); 
@@ -105,7 +109,7 @@ const UpdateGame: React.FC = () => {
 
     form.Image = uploadedFile 
    
-    const response = await updateGame(form, idGame);
+    const response = await updateGame(form, form.code);
 
     setShowLoading({ display: "none" });
     if (response.status == 200) {
@@ -131,54 +135,24 @@ const UpdateGame: React.FC = () => {
     if (!select)
       return (
         <>
-          {name == "code" ?  <div className={styles.d_rows}>          
-            <>
-              <span style={{ color: "black", fontWeight: "bold" }}>{name}</span>
-              <input
-                className={styles.i_general_Style}
-                type={type}
-                name={name}
-                value={propValidar}
-                onChange={handleChange}
-                placeholder={texto}
-                readOnly
-              />
-            </>
-          
-
-          <span className={styles.sp_general_style}>
-            {texto !== "" && validateForm[name] !== "" ? (
-              <>
-                {texto}                
-              </>
-            ) : (
-              ""
-            )}
-          </span>
-        </div> :  <div className={styles.d_rows}>          
-            <>
-              <span style={{ color: "black", fontWeight: "bold" }}>{name}</span>
-              <input
-                className={styles.i_general_Style}
-                type={type}
-                name={name}
-                value={propValidar}
-                onChange={handleChange}
-                placeholder={texto}
-              />
-            </>
-          
-
-          <span className={styles.sp_general_style}>
-            {texto !== "" && validateForm[name] !== "" ? (
-              <>
-                {texto}                
-              </>
-            ) : (
-              ""
-            )}
-          </span>
-        </div>}
+          <div className={styles.d_rows}>
+            <span style={{ color: "black", fontWeight: "bold" }}>{name}</span>
+            <input
+              className={styles.i_general_Style}
+              type={type}
+              name={name}
+              value={propValidar}
+              onChange={handleChange}
+              placeholder={texto}
+            />
+            <span className={styles.sp_general_style}>
+              {texto !== "" && validateForm[name] !== "" ? (
+                <>{texto}</>
+              ) : (
+                ""
+              )}
+            </span>
+          </div>
         </>
       );
     else
@@ -212,22 +186,15 @@ const UpdateGame: React.FC = () => {
   };
 
   const setOptionsSelect = (name, obj) => {
-    let defaultOption = [
-      {
-        value: 0,
-        label: "---",
-        name,
-      },
-    ];
-    let estadoTmp = [
-      ...defaultOption,
-      ...obj.map((client) => ({
-        name,
-        value: client.id,
-        label: client.name,
-      })),
-    ];
-    return estadoTmp;
+    if (!obj || obj.length === 0) {
+      console.error("No se encontraron consolas disponibles.");
+      return [{ value: -1, label: "No hay opciones", name }];
+    }
+    return obj.map((item) => ({
+      name,
+      value: item.id,
+      label: item.name,
+    }));
   };
 
   const removeFile = (key) => {
@@ -277,7 +244,7 @@ const onDrop = (acceptedFiles, label) => {
 
   return (
     <>
-      <Loader estilo={showLoading} />
+      <Loader show={showLoading.display === "block"} estilo={showLoading} /> {/* Ajustar visibilidad del Loader */}
       <div className={styles.div_completar_datos}>
         <form className={styles.f_general_style}>
           <h6 className={styles.h6_completar_datos}>
