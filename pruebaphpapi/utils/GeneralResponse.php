@@ -9,7 +9,7 @@ class GeneralResponse implements JsonSerializable
   public function __construct(string $message, string $status, $data)
   {
     $this->message = $message;
-    $this->status = $status;
+    $this->status = http_response_code(200);
     $this->data = $data;
   }
 

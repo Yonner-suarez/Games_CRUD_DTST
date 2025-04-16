@@ -64,3 +64,7 @@ VALUES
 ('Super Nintendo Entertainment System (SNES)');
 
 
+-- Se agrega una columna para borrado logico 
+ALTER TABLE crud_games ADD COLUMN activo TINYINT(1) DEFAULT 1;
+
+
