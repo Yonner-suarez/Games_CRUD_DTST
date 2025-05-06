@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import traceback
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -11,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from test_create_game_form import test_create_game_form
 
 # Configuración específica
 CHROME_PATH = "C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"
@@ -151,80 +153,6 @@ def test_navbar_elements_absent_in_form(driver):
     except TimeoutException:
         print("⚠ El formulario no se cargó correctamente, no se pueden hacer las verificaciones")
   
-def test_create_game_form(driver):
-    """Llena el formulario de crear juego y lo envía"""
-
-    print("\n🧪 Test: Crear Juego (formulario)")
-
-    try:
-        # Esperar que el formulario esté presente
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//form"))
-        )
-        print("✔ Formulario cargado")
-
-        # Llenar campos
-        driver.find_element(By.NAME, "code").send_keys("123456")
-        driver.find_element(By.NAME, "name").send_keys("Juego de Prueba")
-        driver.find_element(By.NAME, "numberOfPlayers").send_keys("4")
-        driver.find_element(By.NAME, "releaseYear").send_keys("2023")
-        driver.find_element(By.NAME, "description").send_keys("Un juego de prueba para automatización")
-
-        # Seleccionar consola (usa flechas o Enter en el input de react-select)
-        select_input = driver.find_element(By.ID, "Consola")
-        select_input.click()
-
-        ActionChains(driver).move_to_element(select_input).click().perform()
-
-        # Espera a que las opciones estén visibles
-        option = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//div[contains(@class, 'select__option') and text()='PlayStation 4']")
-            )
-        )
-
-        # Haz clic en la opción deseada
-        option.click()
-
-
-        time.sleep(0.5)  # Deja que abra el dropdown
-        select_input.send_keys(Keys.ARROW_DOWN)
-        select_input.send_keys(Keys.ENTER)
-
-        # Cargar imagen en DropZone
-        print("📂 Subiendo imagen...")
-
-        # Encuentra el input type=file oculto dentro del dropzone
-        file_input = driver.find_element(By.XPATH, "//input[@type='file']")
-        file_path = os.path.abspath("C:/Users/Yonne/Downloads/test-image.jpeg")  # Asegúrate que exista
-        file_input.send_keys(file_path)
-
-        print("✔ Imagen cargada")
-
-        # Esperar un poco a que se marque como cargada
-        time.sleep(1.5)
-
-        # Click en "Registra ahora"
-        submit_btn = driver.find_element(By.XPATH, "//button[contains(., 'Registra ahora')]")
-        if submit_btn.is_enabled():
-            submit_btn.click()
-            print("✔ Formulario enviado")
-        else:
-            print("⚠ Botón deshabilitado. Verifica validación")
-
-        # Esperar alerta de éxito (Swal)
-        try:
-            WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "swal2-popup"))
-            )
-            print("🎉 Juego registrado exitosamente")
-        except TimeoutException:
-            print("⚠ No se mostró la alerta de éxito")
-
-    except Exception as e:
-        print(f"❌ Error durante el test de creación: {str(e)}")
-
-
 def main():
     print("🚀 Starting Chrome Dev Tests")
 
