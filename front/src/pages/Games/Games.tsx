@@ -53,7 +53,7 @@ const delGame = async (code: any) => {
   return (
   <>
     <Loader estilo={showLoading} />
-      <h1>LISTA DE GAMES</h1>
+      <h1>LISTA DE JUEGOS</h1>
       <button onClick={() => navigate("/Games/create")}> Crear Juego</button>  
       {gamesList.length === 0 && (
         <div className="text-center mt-4">

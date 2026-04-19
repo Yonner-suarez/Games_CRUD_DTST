@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
             onKeyDown={handleKeyDown}
             onBlur={handleSearch}
             />
-            <img src={logo} onClick={()=> handleHome()} alt="logo" style={{width:"50px", height:"50px", marginLeft:"60px"}} />
+            <img src={logo} onClick={()=> handleHome()} alt="Logotipo" style={{width:"50px", height:"50px", marginLeft:"60px"}} />
           </>
           
         )}

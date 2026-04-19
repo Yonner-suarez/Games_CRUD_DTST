@@ -73,14 +73,14 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                         </button>
                     </div> :
                     isDragActive ?
-                        <p style={{ color: uploadError ? "#BA1A1A" : '' }}>Suelta el archivo aquí ...</p> :
+                        <p style={{ color: uploadError ? "#BA1A1A" : '' }}>Suelta el archivo aquí...</p> :
                         <div style={{
                             display: "flex",
                             alignItems: "center",
                             gap: "8px",
                         }} >
                             {
-                                uploadError ? "UploadIconRead" : ""
+                                ""
                             }
                             {/* <img src={uploadError ? uploadErrorIcon : uploadIcon} alt='upload icon' /> */}
                             <div style={{ width: "auto" }}>
@@ -99,7 +99,7 @@ const DropZone = ({ onFilesUpload, removeFile, label, uploadedFile, required }) 
                         </div>
                 }
             </div>
-            {uploadError && <p style={{ color: '#BA1A1A' }}>Adjunta un documento PDF</p>}
+            {uploadError && <p style={{ color: '#BA1A1A' }}>La imagen debe ser formato PNG</p>}
         </section >
     );
 };
