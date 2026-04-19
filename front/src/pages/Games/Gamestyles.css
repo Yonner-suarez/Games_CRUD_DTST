@@ -24,10 +24,10 @@
 }
 
 .card-content {
-  padding: 15px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1000px;
 }
 
 .card-content h3 {

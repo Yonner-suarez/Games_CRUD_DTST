@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { handleError, searchGames } from "../../helpers/function";
 import logo from "../../../assets/logo.JPG"
@@ -12,8 +12,11 @@ const Navbar: React.FC = () => {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [isLogoPressed, setIsLogoPressed] = useState(false);
+  const [isAddButtonHovered, setIsAddButtonHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
@@ -94,23 +97,12 @@ const Navbar: React.FC = () => {
           placeholder={isInputFocused ? "" : "Buscar juego..."}
           aria-label="Buscar"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          style={{ marginRight: "20px" }}
         />
-        {searchTerm.length > 0 && (
-          <span style={{ 
-            fontSize: "12px", 
-            color: "#666", 
-            whiteSpace: "nowrap",
-            fontStyle: isInputFocused ? "italic" : "normal",
-          }}>
-            
-          </span>
-        )}
-        <img 
+        <img
           src={logo} 
           onClick={handleHome}
           onMouseEnter={() => setIsLogoHovered(true)}
@@ -122,6 +114,36 @@ const Navbar: React.FC = () => {
           style={logoStyle}
         />
       </form>
+      {isHomePage && (
+        <button
+          onClick={() => navigate("/Games/create")}
+          onMouseEnter={() => setIsAddButtonHovered(true)}
+          onMouseLeave={() => setIsAddButtonHovered(false)}
+          style={{
+            position: "absolute",
+            right: "20px",
+            width: "45px",
+            height: "45px",
+            borderRadius: "50%",
+            backgroundColor: "#004876",
+            border: "3px solid #504f82",
+            color: "#fff",
+            fontSize: "30px",
+            fontWeight: "300",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingBottom: "6px",
+            transition: "transform 0.2s ease, box-shadow 0.2s ease",
+            transform: isAddButtonHovered ? "scale(1.1)" : "scale(1)",
+            boxShadow: isAddButtonHovered ? "0 4px 8px rgba(0,0,0,0.4)" : "0 2px 4px rgba(0,0,0,0.3)",
+          }}
+          title="Crear Juego"
+        >
+          +
+        </button>
+      )}
     </nav>
   );
 };
