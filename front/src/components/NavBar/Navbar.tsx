@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { getGamebyid, handleError } from "../../helpers/function";
-import logo from "../../../assets/logo.jpeg"
+import logo from "../../../assets/logo.JPG"
 import Loader from "../Loader/Loader";
 
 const Navbar: React.FC = () => {
