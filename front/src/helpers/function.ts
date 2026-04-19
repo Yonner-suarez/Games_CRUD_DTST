@@ -30,8 +30,12 @@ export const getConsoles = async () => {
   }
 };
 export const gameList = async () => {  
-  const response = await axios.get(`${BASE_URL}${admin.LISTGAMES}`);
+  try {
+    const response = await axios.get(`${BASE_URL}${admin.LISTGAMES}`);
     return response.data;  
+  } catch (error: any) {
+    return null;
+  }
 };
  
  

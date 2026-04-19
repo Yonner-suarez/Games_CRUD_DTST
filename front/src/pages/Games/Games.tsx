@@ -9,18 +9,16 @@ const Games: React.FC = () => {
   const [showLoading, setShowLoading] = useState({ display: "none" });
   const [gamesList, setGamesList] = useState([])
  
-  const lisgames = async () => {  
-      try{
+const lisgames = async () => {  
       setShowLoading({ display: "block" })
       const gamelist_request = await gameList();
- 
-      setGamesList(gamelist_request.data.data);
+      if (gamelist_request?.data?.data) {
+        setGamesList(gamelist_request.data.data);
+      } else {
+        setGamesList([]);
+      }
       setShowLoading({ display: "none" })
-      } catch (error) {
-        handleError(error);
-        setShowLoading({ display: "none" })
-  }
-    };
+};
  
  
   useEffect(() => {
@@ -57,6 +55,12 @@ const delGame = async (code: any) => {
     <Loader estilo={showLoading} />
       <h1>LISTA DE GAMES</h1>
       <button onClick={() => navigate("/Games/create")}> Crear Juego</button>  
+      {gamesList.length === 0 && (
+        <div className="text-center mt-4">
+          <p className="text-muted">No hay juegos registrados.</p>
+          <p className="text-primary">¡Presiona "Crear Juego" para agregar el primero!</p>
+        </div>
+      )}
     {gamesList.map((game, index) => (
   <div key={index} className="container mt-2">
     <div className="card shadow-sm" style={{ maxWidth: "500px", margin: "auto" }}>
