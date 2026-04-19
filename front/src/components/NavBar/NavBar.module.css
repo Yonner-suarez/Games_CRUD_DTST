@@ -63,6 +63,11 @@
   background-size: 22px;
   color: #0000;
   border: none;
+  padding-left: 10px;
+  outline: none;
+}
+.input_search_navbar_style:focus {
+  color: #000;
 }
 .input_search_navbar_style:not(:placeholder-shown) {
   background-image: none;

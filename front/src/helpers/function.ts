@@ -20,6 +20,15 @@ export const getGamebyid = async (idGame: string) => {
   }
 };
  
+export const searchGames = async (query: string) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${admin.SEARCHGAME}?q=${encodeURIComponent(query)}`);
+    return response.data.data; 
+  } catch (error) {
+    return null;
+  }
+};
+ 
  
 export const getConsoles = async () => {
   try {

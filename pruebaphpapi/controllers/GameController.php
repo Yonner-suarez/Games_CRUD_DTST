@@ -316,6 +316,84 @@ class GameController{
             return;
         }
     }
+public function searchGame() {
+    try {
+        $method_request = $_SERVER['REQUEST_METHOD'];
+
+        if ($method_request === "GET") {
+            $search = $_GET['q'] ?? '';
+
+            if (empty($search)) {
+                Middleware::jsonMiddleware(['error' => 'Ingrese un término de búsqueda'], 400);
+                return;
+            }
+
+            global $host, $dbUser, $dbPassword, $dbName, $dbPort;
+            $conn = new mysqli($host, $dbUser, $dbPassword, $dbName, $dbPort);
+
+            if ($conn->connect_error) {
+                Middleware::jsonMiddleware(['error' => 'Error en la base de datos: ' . $conn->connect_error], 500);
+                return;
+            }
+
+            $searchTerm = "%" . $search . "%";
+            $sql = "SELECT g.id, g.name, g.description, g.code, g.numberOfPlayers,
+                           g.releaseYear, g.image, c.id as console_id, c.name as console_name 
+                   FROM crud_games g
+                   INNER JOIN crud_consoles c ON g.console_id = c.id
+                   WHERE g.activo = 1 AND (
+                       g.code LIKE ? OR 
+                       g.name LIKE ? OR 
+                       g.description LIKE ? OR 
+                       CAST(g.releaseYear AS CHAR) LIKE ? OR
+                       c.name LIKE ?
+                   )
+                   LIMIT 20";
+
+            $stmt = $conn->prepare($sql);
+
+            if (!$stmt) {
+                Middleware::jsonMiddleware(['error' => 'Error en la consulta: ' . $conn->error], 500);
+                return;
+            }
+
+            $stmt->bind_param("sssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+
+            if (!$stmt->execute()) {
+                Middleware::jsonMiddleware(['error' => 'Error al ejecutar la consulta: ' . $stmt->error], 500);
+                return;
+            }
+
+            $result = $stmt->get_result();
+            $games = [];
+
+            while ($gameData = $result->fetch_assoc()) {
+                $console = new Console($gameData['console_id'], $gameData['console_name']);
+                $game = new Game(
+                    $gameData['name'],
+                    $gameData['description'],
+                    $gameData['code'],
+                    $gameData['numberOfPlayers'],
+                    $gameData['releaseYear'],
+                    $gameData['image'],
+                    $console
+                );
+                $game->image = trim(base64_encode($game->image));
+                array_push($games, $game);
+            }
+
+            $stmt->close();
+            $conn->close();
+
+            return new GeneralResponse("Búsqueda exitosa", 200, $games);
+        } else {
+            throw new BadRequestResponse("Método no permitido");
+        }
+    } catch (Exception $e) {
+        throw $e;
+    }
+}
+
 public function brrGame() {
     try {
         // Obtener el método de la solicitud
